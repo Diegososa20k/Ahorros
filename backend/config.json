@@ -1,0 +1,10 @@
+{
+  "database": {
+    "DB_NAME": "finanzaAhorro",
+    "DB_USER": "postgres",
+    "DB_PASSWORD": "12345",
+    "DB_HOST": "localhost",
+    "DB_DIALECT": "postgres"
+  }
+}
+ 
