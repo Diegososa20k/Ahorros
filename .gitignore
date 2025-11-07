@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# Backend
+backend/node_modules/
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/bower_components/
+frontend/dist/
+frontend/.cache/
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs y temporales
+*.log
+logs/
+temp/
+tmp/
