@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="cancelar()">&times;</button>
+  <h4 class="modal-title">Crear Categoría</h4>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="Ej: Banco, Efectivo, App Mobile" ng-model="nuevaCategoria.nombre">
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-default" ng-click="cancelar()">Cancelar</button>
+  <button class="btn btn-primary" ng-click="guardarCategoria()">Guardar</button>
+</div>

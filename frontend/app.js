@@ -1,4 +1,4 @@
-var app = angular.module('ahorrosApp', ['ui.router']);
+var app = angular.module('ahorrosApp', ['ui.router', 'ngResource', 'ui.bootstrap']);
 
 app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/principal');
@@ -11,5 +11,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
     .state('trabajo', {
       url: '/trabajo',
       templateUrl: 'views/trabajo/index.html'
+    })
+    .state('ubicacion_dinero', {
+      url: '/ubicacion_dinero',
+      templateUrl: 'views/ubicacion_dinero/index.html',
+      controller: 'ubicacionDineroCtrl'
+    })
+    .state('propietario', {
+      url: '/propietario',
+      templateUrl: 'views/propietario/index.html',
+      controller: 'propietarioCtrl'
     });
+    
 });

@@ -1,0 +1,60 @@
+<div class="container">
+  <h1 class="page-header">Ubicación del Dinero</h1>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label>Nombre de la ubicación</label>
+        <input ng-model="nueva.nombre" class="form-control" placeholder="Caja fuerte, Cuenta Banamex...">
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="form-group">
+        <label>Categoría
+          <i class="fa fa-question-circle" tabindex="0" title="Se refiere si es en efectivo, Banco, Aplicación móvil, etc."></i>
+        </label>
+        <div class="input-group">
+          <select class="form-control" ng-model="nueva.categoria_id">
+            <option value="">-- Selecciona --</option>
+            <option ng-repeat="c in categorias" value="{{c.id}}">{{c.nombre}}</option>
+          </select>
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="abrirModalCategoria()">Crear categoría</button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-2">
+      <div class="form-group">
+        <button class="btn btn-primary btn-block" ng-click="guardar()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <input class="form-control" ng-model="busqueda" placeholder="Buscar ubicación..." style="margin-top:10px;margin-bottom:10px;">
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Creado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="u in ubicaciones | filter:filtrar">
+          <td>{{u.nombre}}</td>
+          <td>{{u.categoria && u.categoria.nombre}}</td>
+          <td>{{u.created_at | date:'yyyy-MM-dd HH:mm'}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

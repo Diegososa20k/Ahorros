@@ -1,0 +1,39 @@
+    <div class="container">
+  <h1 class="mt-3">Propietarios</h1>
+
+  <div class="row my-3">
+    <div class="col-md-6">
+      <label>Seleccionar Propietario
+        <button class="btn btn-sm btn-default" ng-click="abrirModalPropietario()">Crear propietario</button>
+      </label>
+      <select class="form-control" ng-model="nuevo.nombre">
+        <option ng-repeat="p in propietarios" value="{{p.id}}">{{p.nombre}}</option>
+      </select>
+    </div>
+
+    <div class="col-md-6">
+      <label>Ubicación del dinero</label>
+      <select class="form-control" ng-model="nuevo.ubicacion_id">
+        <option ng-repeat="u in ubicaciones" value="{{u.id}}">{{u.nombre}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row my-3">
+    <div class="col-md-6">
+      <label>Tiene cajitas/subcuentas?</label>
+      <select class="form-control" ng-model="nuevo.tieneCajitas">
+        <option value="">--Selecciona--</option>
+        <option value="true">Sí</option>
+        <option value="false">No</option>
+      </select>
+    </div>
+
+    <div class="col-md-6" ng-if="nuevo.tieneCajitas == 'true'">
+      <label>Nombre de la cajita/subcuenta</label>
+      <input type="text" class="form-control" ng-model="nuevo.cajita" placeholder="Ej: Subcuenta 1">
+    </div>
+  </div>
+
+  <button class="btn btn-primary" ng-click="guardarPropietario()">Guardar</button>
+</div>

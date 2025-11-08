@@ -5,14 +5,25 @@
   <title>Finanzas Ahorro</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-  <!-- AngularJS + UI-Router -->
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.29/angular-ui-router.min.js"></script>
+<!-- AngularJS base -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+<!-- AngularJS módulos adicionales -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-resource.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.29/angular-ui-router.min.js"></script>
+
+
+<!-- Angular UI Bootstrap -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
+
+<!-- Tu app -->
+<script src="app.js"></script>
 
   <style>
     body {
@@ -91,6 +102,9 @@
   <div class="sidebar" id="sidebar">
     <a ui-sref="principal"><i class="fa fa-home"></i> <span>Inicio</span></a>
     <a ui-sref="trabajo"><i class="fa fa-briefcase"></i> <span>Trabajo</span></a>
+    <a ui-sref="propietario"><i class="fa fa-users"></i> <span>Propietarios y Cuentas</span></a>
+    <a ui-sref="ubicacion_dinero"><i class="fa fa-university"></i> <span>Ubicación del dinero</span></a>
+
     <a ui-sref="trabajo"><i class="fa fa-briefcase"></i> <span>Propietario y Cuentas</span></a>
     <a ui-sref="trabajo"><i class="fa fa-briefcase"></i> <span>Ubicacion del dinero</span></a>
   </div>
@@ -101,7 +115,6 @@
   </div>
 
   <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Script para colapsar sidebar -->
   <script>
@@ -113,5 +126,18 @@
 
   <!-- Tu lógica Angular -->
   <script src="app.js"></script>
+
+
+  <!--Controllers-->
+  <script src="controllers/ubicacionDineroCtrl.js"></script>
+  <script src="controllers/categoriaCtrl.js"></script>
+  <script src="controllers/propietarioCtrl.js"></script>
+
+  <!--Factorys-->
+  <script src="services/ubicacionDineroFactory.js"></script>
+  <script src="services/categoriaFactory.js"></script>
+  <script src="services/propietarioFactory.js"></script>
+
+
 </body>
 </html>
