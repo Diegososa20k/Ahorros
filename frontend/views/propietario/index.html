@@ -6,9 +6,10 @@
       <label>Seleccionar Propietario
         <button class="btn btn-sm btn-default" ng-click="abrirModalPropietario()">Crear propietario</button>
       </label>
-      <select class="form-control" ng-model="nuevo.nombre">
+      <select class="form-control" ng-model="nuevo.propietario_id">
         <option ng-repeat="p in propietarios" value="{{p.id}}">{{p.nombre}}</option>
       </select>
+
     </div>
 
     <div class="col-md-6">
@@ -31,9 +32,43 @@
 
     <div class="col-md-6" ng-if="nuevo.tieneCajitas == 'true'">
       <label>Nombre de la cajita/subcuenta</label>
-      <input type="text" class="form-control" ng-model="nuevo.cajita" placeholder="Ej: Subcuenta 1">
+      <input type="text" class="form-control" ng-model="nuevo.nombre_cajita_subcuenta" placeholder="Ej. Fondo general o Caja chica">
     </div>
   </div>
 
   <button class="btn btn-primary" ng-click="guardarPropietario()">Guardar</button>
+
+
+
+  <hr>
+
+<h3 class="mt-4">Lista de Propietarios Guardados</h3>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Nombre Propietario</th>
+      <th>Nombre Ubicación</th>
+      <th>Categoría Ubicación</th>
+      <th>Nombre Cajita/Subcuenta</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="p in listaPropietarios">
+      <td>{{ p.propietario_unico.nombre }}</td>
+      <td>{{ p.ubicacion.nombre }}</td>
+      <td>{{ p.ubicacion.categoria.nombre }}</td>
+      <td>
+        <span ng-if="p.nombre_cajita_subcuenta ">{{ p.nombre_cajita_subcuenta  }}</span>
+        <span ng-if="!p.nombre_cajita_subcuenta ">No tiene</span>
+      </td>
+      <td>
+        <button class="btn btn-danger btn-sm" ng-click="eliminarPropietario(p.id)">
+          <i class="fa fa-trash"></i> Eliminar
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 </div>

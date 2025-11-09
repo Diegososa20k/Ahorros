@@ -7,6 +7,8 @@ const { sequelize } = require('./src/models'); // models/index.js exports sequel
 const ubicacionRouter = require('./src/routes/ubicacion_dinero');
 const categoriaRouter = require('./src/routes/categoria');
 const propietarioRouter = require('./src/routes/propietario');
+const propietarioUnicoRouter = require('./src/routes/propietario_unico');
+
 
 
 
@@ -19,6 +21,7 @@ app.use(bodyParser.json());
 app.use('/api/ubicacion_dinero', ubicacionRouter);
 app.use('/api/categoria', categoriaRouter);
 app.use('/api/propietario', propietarioRouter);
+app.use('/api/propietario_unico', propietarioUnicoRouter);
 
 // sincronizar (solo en dev; cuidado en prod)
 sequelize.sync() // no force ni alter salvo que quieras
