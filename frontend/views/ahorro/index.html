@@ -1,0 +1,119 @@
+<div class="page page-forms">
+  <div class="pageheader">
+    <h2><strong>Ahorros</strong></h2>
+  </div>
+
+  <div class="pagecontent">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Registrar nuevo ahorro</h3>
+      </div>
+      <div class="panel-body">
+        <form name="formAhorro" novalidate ng-submit="guardarAhorro()">
+
+          <div class="row">
+            <div class="col-md-4">
+              <label>Cantidad</label>
+              <input type="number" step="0.01" ng-model="nuevoAhorro.cantidad_ahorro"
+                     class="form-control" placeholder="Ej. 1500.00" required />
+            </div>
+
+            <div class="col-md-4">
+              <label>Fecha del ahorro</label>
+              <input type="date" ng-model="nuevoAhorro.fecha_ahorro"
+                     class="form-control" required />
+            </div>
+
+            <div class="col-md-4">
+              <label>Descripción</label>
+              <input type="text" ng-model="nuevoAhorro.descripcion"
+                     class="form-control" placeholder="Opcional" />
+            </div>
+          </div>
+
+          <div class="row m-t-sm">
+            <div class="col-md-4">
+              <label>Propietario</label>
+              <select ng-model="nuevoAhorro.propietario_id"
+  ng-options="p.propietario_id as p.propietario_unico.nombre for p in propietarios"
+  class="form-control" required>
+  <option value="">-- Selecciona propietario --</option>
+</select>
+
+            </div>
+
+            <div class="col-md-4">
+              <label>Ubicación del dinero</label>
+              <select ng-model="nuevoAhorro.ubicacion_id"
+                      ng-options="u.id as u.nombre for u in ubicacionesFiltradas"
+                      class="form-control" required>
+                <option value="">-- Selecciona ubicación --</option>
+              </select>
+            </div>
+
+            <div class="col-md-4" ng-if="mostrarCajitas">
+              <label>Cajita / Subcuenta</label>
+              <select ng-model="nuevoAhorro.cajita_subcuenta"
+                      ng-options="c for c in cajitasPropietario"
+                      class="form-control">
+                <option value="">-- Selecciona cajita o subcuenta --</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row m-t-md">
+            <div class="col-md-12 text-right">
+              <button type="submit" class="btn btn-success"
+                      ng-disabled="formAhorro.$invalid">
+                <i class="fa fa-save"></i> Guardar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tabla de registros -->
+    <div class="panel panel-default m-t-md">
+      <div class="panel-heading">
+        <h3 class="panel-title">Ahorros registrados</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Cantidad</th>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Ubicación</th>
+              <th>Propietario</th>
+              <th>Cajita / Subcuenta</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="a in ahorros">
+              <td>{{$index + 1}}</td>
+              <td>{{a.cantidad_ahorro | currency}}</td>
+              <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
+              <td>{{a.descripcion || '-'}}</td>
+              <td>{{a.ubicacion.nombre}}</td>
+              <td>{{a.propietario.nombre}}</td>
+              <td>{{a.cajita_subcuenta || '-'}}</td>
+              <td>
+                <button class="btn btn-danger btn-sm"
+                        ng-click="eliminarAhorro(a.id)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr ng-if="ahorros.length === 0">
+              <td colspan="8" class="text-center text-muted">No hay ahorros registrados.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

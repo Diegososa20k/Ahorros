@@ -58,6 +58,25 @@ angular.module('ahorrosApp')
     }
   };
 
+
+   // 🔹 Abrir modal para crear propietario único
+  $scope.abrirModalPropietario = function() {
+    var modalInstance = $uibModal.open({
+      templateUrl: 'views/propietario/modal/propietario.html',
+      controller: 'ModalPropietarioUnicoCtrl',
+      size: 'md'
+    });
+
+    modalInstance.result.then(function(nuevoProp) {
+      if (nuevoProp) {
+        propietarioUnicoFactory.save(nuevoProp).$promise
+          .then(() => $scope.cargarPropietarios())
+          .catch(err => console.error(err));
+      }
+    });
+  };
+
+
   // Cargar todo al iniciar
   $scope.cargarPropietarios();
   $scope.cargarUbicaciones();

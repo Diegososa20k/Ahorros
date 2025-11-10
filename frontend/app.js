@@ -21,6 +21,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
       url: '/propietario',
       templateUrl: 'views/propietario/index.html',
       controller: 'propietarioCtrl'
+    })
+
+    .state('ahorro', {
+      url: '/ahorro',
+      templateUrl: 'views/ahorro/index.html',
+      controller: 'ahorroCtrl'
     });
     
 });

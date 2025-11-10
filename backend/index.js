@@ -8,6 +8,10 @@ const ubicacionRouter = require('./src/routes/ubicacion_dinero');
 const categoriaRouter = require('./src/routes/categoria');
 const propietarioRouter = require('./src/routes/propietario');
 const propietarioUnicoRouter = require('./src/routes/propietario_unico');
+const ahorroRouter = require('./src/routes/ahorro');
+const dondeAhorrarRouter = require('./src/routes/donde_ahorrar');
+
+
 
 
 
@@ -22,6 +26,10 @@ app.use('/api/ubicacion_dinero', ubicacionRouter);
 app.use('/api/categoria', categoriaRouter);
 app.use('/api/propietario', propietarioRouter);
 app.use('/api/propietario_unico', propietarioUnicoRouter);
+app.use('/api/donde_ahorrar', dondeAhorrarRouter);
+app.use('/api/ahorro', ahorroRouter);
+
+
 
 // sincronizar (solo en dev; cuidado en prod)
 sequelize.sync() // no force ni alter salvo que quieras
