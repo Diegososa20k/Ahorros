@@ -2,8 +2,8 @@
 
 angular.module('ahorrosApp')
 
-.factory('ahorroFactory', function($resource) {
-  return $resource('http://localhost:5001/api/ahorro/:id', { id: '@id' }, {
+.factory('ahorroFactory', function($resource, API_URL) {
+  return $resource(`${API_URL}/ahorro/:id`, { id: '@id' }, {
     query: {
       method: 'GET',
       isArray: false // 👈 agrega esto

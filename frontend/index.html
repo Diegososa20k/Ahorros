@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html lang="es" ng-app="ahorrosApp">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Finanzas Ahorro</title>
 
-  <!-- Bootstrap -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <!-- ✅ Bootstrap y jQuery (orden correcto) -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-  <!-- FontAwesome -->
+  <!-- ✅ FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<!-- AngularJS base -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <!-- ✅ AngularJS base -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 
-<!-- AngularJS módulos adicionales -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-resource.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.29/angular-ui-router.min.js"></script>
+  <!-- ✅ AngularJS módulos adicionales -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-resource.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.29/angular-ui-router.min.js"></script>
 
+  <!-- ✅ Angular UI Bootstrap -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
 
-<!-- Angular UI Bootstrap -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.6/ui-bootstrap-tpls.min.js"></script>
-
-<!-- Tu app -->
-<script src="app.js"></script>
+  <!-- ✅ Tu app principal -->
+  <script src="app.js"></script>
 
   <style>
     body {
@@ -88,7 +88,7 @@
 </head>
 <body>
 
-  <!-- Navbar superior -->
+  <!-- ===== NAVBAR SUPERIOR ===== -->
   <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
       <button class="btn btn-outline-light me-2" id="toggleBtn">
@@ -98,23 +98,21 @@
     </div>
   </nav>
 
-  <!-- Sidebar lateral -->
+  <!-- ===== SIDEBAR LATERAL ===== -->
   <div class="sidebar" id="sidebar">
     <a ui-sref="principal"><i class="fa fa-home"></i> <span>Inicio</span></a>
     <a ui-sref="trabajo"><i class="fa fa-briefcase"></i> <span>Trabajo</span></a>
     <a ui-sref="propietario"><i class="fa fa-users"></i> <span>Propietarios y Cuentas</span></a>
     <a ui-sref="ubicacion_dinero"><i class="fa fa-university"></i> <span>Ubicación del dinero</span></a>
-    <a ui-sref="ahorro"><i class="fa fa-university"></i> <span>Ahorro</span></a>
+    <a ui-sref="ahorro"><i class="fa fa-piggy-bank"></i> <span>Ahorro</span></a>
   </div>
 
-  <!-- Contenido principal -->
+  <!-- ===== CONTENIDO PRINCIPAL ===== -->
   <div class="content" id="content">
     <div ui-view></div>
   </div>
 
-  <!-- Bootstrap JS -->
-
-  <!-- Script para colapsar sidebar -->
+  <!-- ===== Script para colapsar sidebar ===== -->
   <script>
     document.getElementById('toggleBtn').addEventListener('click', function() {
       document.getElementById('sidebar').classList.toggle('collapsed');
@@ -122,11 +120,7 @@
     });
   </script>
 
-  <!-- Tu lógica Angular -->
-  <script src="app.js"></script>
-
-
-  <!--Controllers-->
+  <!-- ===== Controllers ===== -->
   <script src="controllers/ubicacionDineroCtrl.js"></script>
   <script src="controllers/categoriaCtrl.js"></script>
   <script src="controllers/propietarioCtrl.js"></script>
@@ -134,7 +128,7 @@
   <script src="controllers/dondeAhorrarCtrl.js"></script>
   <script src="controllers/ahorroCtrl.js"></script>
 
-  <!--Factorys-->
+  <!-- ===== Services / Factories ===== -->
   <script src="services/ubicacionDineroFactory.js"></script>
   <script src="services/categoriaFactory.js"></script>
   <script src="services/propietarioFactory.js"></script>
@@ -142,6 +136,19 @@
   <script src="services/dondeAhorrarFactory.js"></script>
   <script src="services/ahorroFactory.js"></script>
 
+  <!-- ✅ Configuración global (se carga al final) -->
+  <script>
+    fetch('config.json')
+      .then(response => response.json())
+      .then(data => {
+        // Crear la constante API_URL desde config.json
+        angular.module('ahorrosApp')
+          .constant('API_URL', data.API_URL);
+        // Inicializa Angular manualmente
+        angular.bootstrap(document, ['ahorrosApp']);
+      })
+      .catch(err => console.error('Error cargando config.json', err));
+  </script>
 
 </body>
 </html>
