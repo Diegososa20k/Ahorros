@@ -1,0 +1,63 @@
+<div class="modal-header">
+  <h3 class="modal-title">Registrar gasto</h3>
+</div>
+
+<div class="modal-body">
+  <form name="formGasto" novalidate>
+
+    <div class="row">
+      <div class="col-md-4">
+        <label>Cantidad</label>
+        <input type="number" step="0.01" ng-model="nuevoGasto.cantidad_gasto"
+               class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label>Fecha del gasto</label>
+        <input type="date" ng-model="nuevoGasto.fecha_gasto"
+               class="form-control" required>
+      </div>
+
+      <div class="col-md-4">
+        <label>Descripción</label>
+        <input type="text" ng-model="nuevoGasto.descripcion"
+               class="form-control">
+      </div>
+    </div>
+
+    <div class="row m-t-sm">
+      <div class="col-md-4">
+        <label>Propietario</label>
+        <select ng-model="nuevoGasto.propietario_id"
+                ng-options="p.propietario_id as p.propietario_unico.nombre for p in propietarios"
+                class="form-control" required>
+          <option value="">-- Selecciona propietario --</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label>Ubicación</label>
+        <select ng-model="nuevoGasto.ubicacion_id"
+                ng-options="u.id as u.nombre for u in ubicacionesFiltradas"
+                class="form-control" required>
+          <option value="">-- Selecciona ubicación --</option>
+        </select>
+      </div>
+
+      <div class="col-md-4" ng-if="mostrarCajitasGasto">
+        <label>Cajita / Subcuenta</label>
+        <select ng-model="nuevoGasto.cajita_subcuenta"
+                ng-options="c for c in cajitasPropietarioGasto"
+                class="form-control">
+          <option value="">-- Selecciona cajita --</option>
+        </select>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-default" ng-click="cancelar()">Cancelar</button>
+  <button class="btn btn-danger" ng-click="guardarGasto()" ng-disabled="formGasto.$invalid">Guardar gasto</button>
+</div>

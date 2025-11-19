@@ -1,5 +1,5 @@
 angular.module('ahorrosApp')
-.controller('ahorroCtrl', function($scope, ahorroFactory, propietarioFactory, $http, API_URL) {
+.controller('ahorroCtrl', function($scope, ahorroFactory, propietarioFactory, $http, API_URL, $uibModal, propietarioUnicoUbicacionesFactory) {
 
   $scope.ahorros = [];
   $scope.propietarios = [];
@@ -7,6 +7,45 @@ angular.module('ahorrosApp')
   $scope.cajitasPropietario = [];
   $scope.mostrarCajitas = false;
   $scope.nuevoAhorro = {fecha_ahorro: new Date()};
+  $scope.pestanaActiva = "ahorros";
+  
+$scope.filtro = {
+  ubicacion: "",
+  propietario: "",
+  cajita: ""
+};
+
+$scope.filtrarTabla = function(item) {
+  // Ubicación
+  if ($scope.filtro.ubicacion &&
+      !item.ubicacion.nombre.toLowerCase().includes($scope.filtro.ubicacion.toLowerCase())) {
+    return false;
+  }
+
+  // Propietario
+  if ($scope.filtro.propietario &&
+      !item.propietario.nombre.toLowerCase().includes($scope.filtro.propietario.toLowerCase())) {
+    return false;
+  }
+
+  // Cajita
+  if ($scope.filtro.cajita &&
+      !(item.cajita_subcuenta || "").toLowerCase().includes($scope.filtro.cajita.toLowerCase())) {
+    return false;
+  }
+
+  return true;
+};
+
+
+  $scope.ahorrosPositivos = function () {
+  return $scope.ahorros.filter(a => a.cantidad_ahorro > 0);
+};
+
+$scope.ahorrosNegativos = function () {
+  return $scope.ahorros.filter(a => a.cantidad_ahorro < 0);
+};
+
 
   // Total seleccionado (para mostrar en barra superior)
   $scope.totalSeleccionado = 0;
@@ -141,38 +180,43 @@ angular.module('ahorrosApp')
   };
 
   // 🔹 Cuando cambia el propietario -> traer ubicaciones para ese propietario
-  $scope.$watch('nuevoAhorro.propietario_id', function(nuevoValor) {
-    if (nuevoValor) {
-      $http.get(`${API_URL}/propietario_unico/${nuevoValor}/ubicaciones`)
-        .then(resp => {
-          $scope.ubicacionesFiltradas = resp.data.data || [];
-          $scope.nuevoAhorro.ubicacion_id = '';
-          $scope.cajitasPropietario = [];
-          $scope.mostrarCajitas = false;
-        })
-        .catch(err => console.error('Error cargando ubicaciones:', err));
-    } else {
-      $scope.ubicacionesFiltradas = [];
-      $scope.cajitasPropietario = [];
-      $scope.mostrarCajitas = false;
-    }
-  });
+$scope.$watch('nuevoAhorro.propietario_id', function(nuevoValor) {
+  if (nuevoValor) {
+    propietarioUnicoUbicacionesFactory
+      .ubicaciones(nuevoValor)
+      .then(resp => {
+        $scope.ubicacionesFiltradas = resp.data || resp; 
+        $scope.nuevoAhorro.ubicacion_id = '';
+        $scope.cajitasPropietario = [];
+        $scope.mostrarCajitas = false;
+      })
+      .catch(err => console.error('Error cargando ubicaciones:', err));
+  } else {
+    $scope.ubicacionesFiltradas = [];
+    $scope.cajitasPropietario = [];
+    $scope.mostrarCajitas = false;
+  }
+});
+
 
   // 🔹 Cuando cambia la ubicación -> traer cajitas de ese propietario+ubicacion
-  $scope.$watch('nuevoAhorro.ubicacion_id', function(ubicacionId) {
-    const propietarioId = $scope.nuevoAhorro.propietario_id;
-    if (ubicacionId && propietarioId) {
-      $http.get(`${API_URL}/propietario_unico/${propietarioId}/ubicaciones/${ubicacionId}/cajitas`)
-        .then(resp => {
-          $scope.cajitasPropietario = resp.data.data || [];
-          $scope.mostrarCajitas = true;
-        })
-        .catch(err => console.error('Error cargando cajitas:', err));
-    } else {
-      $scope.cajitasPropietario = [];
-      $scope.mostrarCajitas = false;
-    }
-  });
+$scope.$watch('nuevoAhorro.ubicacion_id', function(ubicacionId) {
+  const propietarioId = $scope.nuevoAhorro.propietario_id;
+
+  if (ubicacionId && propietarioId) {
+    propietarioUnicoUbicacionesFactory
+      .cajitas(propietarioId, ubicacionId)
+      .then(resp => {
+        $scope.cajitasPropietario = resp.data || resp;
+        $scope.mostrarCajitas = true;
+      })
+      .catch(err => console.error('Error cargando cajitas:', err));
+  } else {
+    $scope.cajitasPropietario = [];
+    $scope.mostrarCajitas = false;
+  }
+});
+
 
   // Alternar selección de un padre
   $scope.togglePadre = function(ubic) {
@@ -205,4 +249,89 @@ angular.module('ahorrosApp')
     .catch(() => $scope.generarCards());
 
   $scope.cargarPropietarios();
+
+
+  $scope.abrirModalGasto = function() {
+
+  var modalInstance = $uibModal.open({
+    templateUrl: '/frontend/views/ahorro/modal/gastos.html',
+    controller: 'gastoModalCtrl',
+    size: 'md',
+    resolve: {
+      propietarios: () => $scope.propietarios
+    }
+  });
+
+  modalInstance.result.then(function() {
+    $scope.cargarAhorros().then($scope.generarCards);
+  });
+};
+
+})
+
+
+.controller('gastoModalCtrl', function(
+  $scope, $http, API_URL,
+  $uibModalInstance, propietarios, propietarioUnicoUbicacionesFactory, ahorroFactory
+) {
+
+  $scope.propietarios = propietarios;
+  $scope.ubicacionesFiltradas = [];
+  $scope.cajitasPropietarioGasto = [];
+  $scope.mostrarCajitasGasto = false;
+
+  $scope.nuevoGasto = {
+    fecha_gasto: new Date()
+  };
+
+  // Cambia propietario → cargar ubicaciones
+$scope.$watch('nuevoGasto.propietario_id', function(id) {
+  if (!id) return;
+
+  propietarioUnicoUbicacionesFactory
+    .ubicaciones(id)
+    .then(resp => {
+      $scope.ubicacionesFiltradas = resp.data;
+      $scope.nuevoGasto.ubicacion_id = '';
+      $scope.mostrarCajitasGasto = false;
+    });
+});
+
+
+  // Cambia ubicación → cargar cajitas
+  $scope.$watch('nuevoGasto.ubicacion_id', function(u) {
+    if (!u || !$scope.nuevoGasto.propietario_id) return;
+
+    propietarioUnicoUbicacionesFactory
+  .cajitas($scope.nuevoGasto.propietario_id, u)
+  .then(resp => {
+    $scope.cajitasPropietarioGasto = resp.data || resp;
+    $scope.mostrarCajitasGasto = true;
+  })
+  });
+
+  // Guardar gasto
+  $scope.guardarGasto = function() {
+    const data = {
+        cantidad_ahorro: $scope.nuevoGasto.cantidad_gasto * -1,
+        fecha_ahorro: $scope.nuevoGasto.fecha_gasto,
+        descripcion: $scope.nuevoGasto.descripcion,
+        ubicacion_id: $scope.nuevoGasto.ubicacion_id,
+        propietario_id: $scope.nuevoGasto.propietario_id,
+        cajita_subcuenta: $scope.nuevoGasto.cajita_subcuenta
+    };
+
+    ahorroFactory.save(data).$promise
+  .then(() => {
+
+        alert("Gasto registrado correctamente");
+        $uibModalInstance.close();
+      });
+};
+
+
+
+
+
+  $scope.cancelar = () => $uibModalInstance.dismiss('cancel');
 });

@@ -63,9 +63,13 @@
 
           <div class="row m-t-md">
             <div class="col-md-12 text-right">
+              <button class="btn btn-warning" ng-click="abrirModalGasto()">
+                <i class="fa fa-minus-circle"></i> Realizar gasto
+              </button>
+
               <button type="submit" class="btn btn-success"
                       ng-disabled="formAhorro.$invalid">
-                <i class="fa fa-save"></i> Guardar
+                <i class="fa fa-save"></i> Guardar ahorro
               </button>
             </div>
           </div>
@@ -157,28 +161,85 @@
 </div>
 
 
+    <!-- 🔷 TABS / PESTAÑAS -->
+    <ul class="nav nav-tabs m-t-md">
+      <li ng-class="{active: pestanaActiva === 'ahorros'}">
+        <a href="" ng-click="pestanaActiva = 'ahorros'">
+          <i class="fa fa-piggy-bank"></i> Ahorros
+        </a>
+      </li>
+
+      <li ng-class="{active: pestanaActiva === 'gastos'}">
+        <a href="" ng-click="pestanaActiva = 'gastos'">
+          <i class="fa fa-money"></i> Gastos
+        </a>
+      </li>
+    </ul>
+
 
     <!-- Tabla de registros -->
     <div class="panel panel-default m-t-md">
       <div class="panel-heading">
-        <h3 class="panel-title">Ahorros registrados</h3>
+        <h3 class="panel-title" ng-if="pestanaActiva === 'ahorros'">Ahorros registrados</h3>
+        <h3 class="panel-title" ng-if="pestanaActiva === 'gastos'">Gastos registrados</h3>
       </div>
+
       <div class="panel-body">
+
         <table class="table table-bordered table-striped">
           <thead>
-            <tr>
-              <th>#</th>
-              <th>Cantidad</th>
-              <th>Fecha</th>
-              <th>Descripción</th>
-              <th>Ubicación</th>
-              <th>Propietario</th>
-              <th>Cajita / Subcuenta</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
+  <tr>
+    <th>#</th>
+    <th>Cantidad</th>
+    <th>Fecha</th>
+    <th>Descripción</th>
+    <th>Ubicación</th>
+    <th>Propietario</th>
+    <th>Cajita / Subcuenta</th>
+    <th>Acciones</th>
+  </tr>
+
+  <!-- 🔎 FILTROS DENTRO DE LA TABLA -->
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th></th>
+
+    <!-- Filtro Ubicación -->
+    <th>
+      <input type="text" class="form-control input-sm"
+             placeholder="Buscar..."
+             ng-model="filtro.ubicacion">
+    </th>
+
+    <!-- Filtro Propietario -->
+    <th>
+      <input type="text" class="form-control input-sm"
+             placeholder="Buscar..."
+             ng-model="filtro.propietario">
+    </th>
+
+    <!-- Filtro Cajita / Subcuenta -->
+    <th>
+      <input type="text" class="form-control input-sm"
+             placeholder="Buscar..."
+             ng-model="filtro.cajita">
+    </th>
+
+    <th></th>
+  </tr>
+</thead>
+
+
           <tbody>
-            <tr ng-repeat="a in ahorros">
+            <!-- TABLA AHORROS -->
+            <tr ng-if="pestanaActiva === 'ahorros'"
+    ng-repeat="a in ahorrosPositivos() 
+               | filter:filtrarTabla 
+               track by a.id">
+
+
               <td>{{$index + 1}}</td>
               <td>{{a.cantidad_ahorro | currency}}</td>
               <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
@@ -193,12 +254,41 @@
                 </button>
               </td>
             </tr>
-            <tr ng-if="ahorros.length === 0">
-              <td colspan="8" class="text-center text-muted">No hay ahorros registrados.</td>
+
+            <!-- TABLA GASTOS -->
+            <tr ng-if="pestanaActiva === 'gastos'"
+    ng-repeat="a in ahorrosNegativos() 
+               | filter:filtrarTabla 
+               track by a.id">
+
+
+              <td>{{$index + 1}}</td>
+              <td>{{a.cantidad_ahorro | currency}}</td>
+              <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
+              <td>{{a.descripcion || '-'}}</td>
+              <td>{{a.ubicacion.nombre}}</td>
+              <td>{{a.propietario.nombre}}</td>
+              <td>{{a.cajita_subcuenta || '-'}}</td>
+              <td>
+                <button class="btn btn-danger btn-sm"
+                        ng-click="eliminarAhorro(a.id)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
             </tr>
+
+            <!-- SIN REGISTROS -->
+            <tr ng-if="(pestanaActiva === 'ahorros' && ahorrosPositivos().length === 0) ||
+                      (pestanaActiva === 'gastos' && ahorrosNegativos().length === 0)">
+              <td colspan="8" class="text-center text-muted">
+                No hay registros en esta categoría.
+              </td>
+            </tr>
+
           </tbody>
         </table>
       </div>
     </div>
+
   </div>
 </div>
