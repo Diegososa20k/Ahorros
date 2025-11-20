@@ -1,0 +1,105 @@
+<div class="modal-header">
+  <h4 class="modal-title">Transferencia entre cuentas propias</h4>
+</div>
+
+<div class="modal-body">
+
+  <div class="row">
+
+    <!-- ===================== -->
+    <!-- COLUMNA ORIGEN -->
+    <!-- ===================== -->
+    <div class="col-md-6">
+
+      <h4>Primera cuenta (Origen)</h4>
+
+      <div class="form-group">
+        <label>Propietario</label>
+        <select class="form-control"
+                ng-model="data.origen.propietario_id"
+                ng-options="p.id as p.nombre for p in propietarios">
+          <option value="">Seleccione</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Ubicación del dinero</label>
+        <select class="form-control"
+                ng-model="data.origen.ubicacion_id"
+                ng-options="u.id as u.nombre for u in ubicacionesOrigen">
+          <option value="">Seleccione</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Cajita / Subcuenta</label>
+        <select class="form-control"
+        ng-model="data.origen.cajita"
+        ng-options="c for c in cajitasOrigen">
+            <option value="">Seleccione</option>
+        </select>
+
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <input class="form-control" ng-model="data.origen.descripcion">
+      </div>
+
+      <div class="form-group">
+        <label>Cantidad a pasar</label>
+        <input class="form-control" type="number" ng-model="data.origen.cantidad">
+      </div>
+
+    </div>
+
+
+    <!-- ===================== -->
+    <!-- COLUMNA DESTINO -->
+    <!-- ===================== -->
+    <div class="col-md-6">
+
+      <h4>Segunda cuenta (Destino)</h4>
+
+      <div class="form-group">
+        <label>Propietario</label>
+        <select class="form-control"
+                ng-model="data.destino.propietario_id"
+                ng-options="p.id as p.nombre for p in propietarios">
+          <option value="">Seleccione</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Ubicación del dinero</label>
+        <select class="form-control"
+                ng-model="data.destino.ubicacion_id"
+                ng-options="u.id as u.nombre for u in ubicacionesDestino">
+          <option value="">Seleccione</option>
+        </select>
+      </div>
+
+        <div class="form-group">
+        <label>Cajita / Subcuenta</label>
+            <select class="form-control"
+                    ng-model="data.destino.cajita"
+                    ng-options="c for c in cajitasDestino">
+                <option value="">Seleccione</option>
+            </select>
+        </div>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-default" ng-click="cancelar()">Cancelar</button>
+
+  <button class="btn btn-primary"
+          ng-click="transferir()">
+    Realizar transferencia
+  </button>
+</div>

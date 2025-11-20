@@ -250,8 +250,7 @@ $scope.$watch('nuevoAhorro.ubicacion_id', function(ubicacionId) {
 
   $scope.cargarPropietarios();
 
-
-  $scope.abrirModalGasto = function() {
+$scope.abrirModalGasto = function() {
 
   var modalInstance = $uibModal.open({
     templateUrl: '/frontend/views/ahorro/modal/gastos.html',
@@ -266,6 +265,21 @@ $scope.$watch('nuevoAhorro.ubicacion_id', function(ubicacionId) {
     $scope.cargarAhorros().then($scope.generarCards);
   });
 };
+
+$scope.abrirModalTransferencia = function () {
+
+  var modalInstance = $uibModal.open({
+    templateUrl: '/frontend/views/ahorro/modal/transferencia_cuentas_propia.html',
+    controller: 'transferenciaModalCtrl',
+    size: 'lg'
+  });
+
+  modalInstance.result.then(function () {
+    $scope.cargarAhorros().then($scope.generarCards);
+  });
+
+};
+
 
 })
 
@@ -334,4 +348,149 @@ $scope.$watch('nuevoGasto.propietario_id', function(id) {
 
 
   $scope.cancelar = () => $uibModalInstance.dismiss('cancel');
+})
+
+.controller('transferenciaModalCtrl', function(
+  $scope, $uibModalInstance,
+  propietarioFactory,
+  propietarioUnicoUbicacionesFactory,
+  ahorroFactory
+) {
+
+  // ============================
+  //   MODELO
+  // ============================
+  $scope.data = {
+    origen: {
+      propietario_id: "",
+      ubicacion_id: "",
+      cajita: "",
+      descripcion: "",
+      cantidad: null
+    },
+    destino: {
+      propietario_id: "",
+      ubicacion_id: "",
+      cajita: ""
+    }
+  };
+
+  $scope.propietarios = [];
+  $scope.ubicacionesOrigen = [];
+  $scope.ubicacionesDestino = [];
+  $scope.cajitasOrigen = [];
+  $scope.cajitasDestino = [];
+
+  // ============================
+  //   CARGAR PROPIETARIOS
+  // ============================
+ $scope.propietarios = [];
+
+propietarioFactory.query().$promise.then(function(data) {
+
+    const owners = [];
+    const ids = new Set();
+
+    data.forEach(item => {
+
+        const ownerId = item.propietario_id;
+        const ownerName = item.propietario_unico?.nombre;
+
+        if (!ids.has(ownerId)) {
+            ids.add(ownerId);
+            owners.push({
+                id: ownerId,
+                nombre: ownerName
+            });
+        }
+    });
+
+    $scope.propietarios = owners;
+});
+
+
+  // ============================
+  //   WATCH ORIGEN
+  // ============================
+  $scope.$watch('data.origen.propietario_id', function(id) {
+    if (!id) return;
+    propietarioUnicoUbicacionesFactory.ubicaciones(id).then(resp => {
+      $scope.ubicacionesOrigen = resp.data || resp;
+      $scope.data.origen.ubicacion_id = "";
+      $scope.cajitasOrigen = [];
+    });
+  });
+
+  $scope.$watch('data.origen.ubicacion_id', function(uid) {
+    if (!uid || !$scope.data.origen.propietario_id) return;
+
+    propietarioUnicoUbicacionesFactory.cajitas(
+      $scope.data.origen.propietario_id,
+      uid
+    ).then(resp => {
+      $scope.cajitasOrigen = resp.data || resp;
+    });
+  });
+
+  // ============================
+  //   WATCH DESTINO
+  // ============================
+  $scope.$watch('data.destino.propietario_id', function(id) {
+    if (!id) return;
+    propietarioUnicoUbicacionesFactory.ubicaciones(id).then(resp => {
+      $scope.ubicacionesDestino = resp.data || resp;
+      $scope.data.destino.ubicacion_id = "";
+      $scope.cajitasDestino = [];
+    });
+  });
+
+  $scope.$watch('data.destino.ubicacion_id', function(uid) {
+    if (!uid || !$scope.data.destino.propietario_id) return;
+
+    propietarioUnicoUbicacionesFactory.cajitas(
+      $scope.data.destino.propietario_id,
+      uid
+    ).then(resp => {
+      $scope.cajitasDestino = resp.data || resp;
+    });
+  });
+
+  // ============================
+  //   REALIZAR TRANSFERENCIA
+  // ============================
+  $scope.transferir = function() {
+
+    const cant = parseFloat($scope.data.origen.cantidad);
+    if (!cant || cant <= 0) {
+      alert("Cantidad inválida");
+      return;
+    }
+
+    const gasto = {
+      cantidad_ahorro: cant * -1,
+      fecha_ahorro: new Date(),
+      descripcion: $scope.data.origen.descripcion,
+      ubicacion_id: $scope.data.origen.ubicacion_id,
+      propietario_id: $scope.data.origen.propietario_id,
+      cajita_subcuenta: $scope.data.origen.cajita
+    };
+
+    const ahorro = {
+      cantidad_ahorro: cant,
+      fecha_ahorro: new Date(),
+      descripcion: "Transferencia desde otra cuenta",
+      ubicacion_id: $scope.data.destino.ubicacion_id,
+      propietario_id: $scope.data.destino.propietario_id,
+      cajita_subcuenta: $scope.data.destino.cajita
+    };
+
+    ahorroFactory.save(gasto).$promise
+      .then(() => ahorroFactory.save(ahorro).$promise)
+      .then(() => {
+        alert("Transferencia realizada correctamente");
+        $uibModalInstance.close();
+      });
+  };
+
+  $scope.cancelar = () => $uibModalInstance.dismiss("cancel");
 });
