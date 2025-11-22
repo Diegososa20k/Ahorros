@@ -350,6 +350,7 @@ $scope.$watch('nuevoGasto.propietario_id', function(id) {
   $scope.cancelar = () => $uibModalInstance.dismiss('cancel');
 })
 
+
 .controller('transferenciaModalCtrl', function(
   $scope, $uibModalInstance,
   propietarioFactory,
@@ -384,76 +385,190 @@ $scope.$watch('nuevoGasto.propietario_id', function(id) {
   // ============================
   //   CARGAR PROPIETARIOS
   // ============================
- $scope.propietarios = [];
-
-propietarioFactory.query().$promise.then(function(data) {
+  propietarioFactory.query().$promise.then(function(data) {
 
     const owners = [];
     const ids = new Set();
 
     data.forEach(item => {
+      const ownerId = item.propietario_id;
+      const ownerName = item.propietario_unico?.nombre;
 
-        const ownerId = item.propietario_id;
-        const ownerName = item.propietario_unico?.nombre;
-
-        if (!ids.has(ownerId)) {
-            ids.add(ownerId);
-            owners.push({
-                id: ownerId,
-                nombre: ownerName
-            });
-        }
+      if (!ids.has(ownerId)) {
+        ids.add(ownerId);
+        owners.push({
+          id: ownerId,
+          nombre: ownerName
+        });
+      }
     });
 
     $scope.propietarios = owners;
-});
+  });
 
 
   // ============================
-  //   WATCH ORIGEN
+  //   WATCH ORIGEN → PROPIETARIO
   // ============================
   $scope.$watch('data.origen.propietario_id', function(id) {
     if (!id) return;
-    propietarioUnicoUbicacionesFactory.ubicaciones(id).then(resp => {
-      $scope.ubicacionesOrigen = resp.data || resp;
-      $scope.data.origen.ubicacion_id = "";
-      $scope.cajitasOrigen = [];
-    });
+
+    propietarioUnicoUbicacionesFactory.ubicaciones(id)
+      .then(resp => {
+        $scope.ubicacionesOrigen = resp.data || resp;
+        $scope.data.origen.ubicacion_id = "";
+        $scope.cajitasOrigen = [];
+        $scope.saldoOrigen = 0;   // limpiar saldo
+      });
   });
 
+  // ============================
+  //   WATCH ORIGEN → UBICACION
+  // ============================
   $scope.$watch('data.origen.ubicacion_id', function(uid) {
     if (!uid || !$scope.data.origen.propietario_id) return;
 
+    // 1️⃣ Cargar cajitas
     propietarioUnicoUbicacionesFactory.cajitas(
       $scope.data.origen.propietario_id,
       uid
     ).then(resp => {
       $scope.cajitasOrigen = resp.data || resp;
+      $scope.data.origen.cajita = "";
+    });
+
+    // 2️⃣ Cargar TODOS los movimientos de esa ubicacion
+    ahorroFactory.query({
+      propietario_id: $scope.data.origen.propietario_id,
+      ubicacion_id: uid
+    }).$promise.then(function(resp) {
+
+      const all = resp.data || resp;
+
+      // 3️⃣ Filtrar por propietario y ubicacion (por si el backend devuelve más)
+      const filtrados = all.filter(x =>
+        x.propietario_id == $scope.data.origen.propietario_id &&
+        x.ubicacion_id == uid
+      );
+
+      $scope.ahorrosOrigen = filtrados;
+
+      // 4️⃣ Calcular saldo total
+      $scope.saldoOrigenUbicacion = filtrados.reduce(
+  (sum, item) => sum + parseFloat(item.cantidad_ahorro),
+  0
+);
+
+// limpiar saldo de cajita
+$scope.saldoOrigenCajita = undefined;
+
     });
   });
+
+  // ============================
+  //   WATCH ORIGEN → CAJITA
+  //     (Para mostrar saldo solo de esa cajita)
+  // ============================
+  $scope.$watch('data.origen.cajita', function(cajita) {
+  if (!cajita || !$scope.ahorrosOrigen) {
+    $scope.saldoOrigenCajita = undefined;
+    return;
+  }
+
+  const filtrados = $scope.ahorrosOrigen.filter(x =>
+    x.cajita_subcuenta === cajita
+  );
+
+  $scope.saldoOrigenCajita = filtrados.reduce(
+    (sum, item) => sum + parseFloat(item.cantidad_ahorro),
+    0
+  );
+});
+
+
 
   // ============================
   //   WATCH DESTINO
   // ============================
-  $scope.$watch('data.destino.propietario_id', function(id) {
-    if (!id) return;
-    propietarioUnicoUbicacionesFactory.ubicaciones(id).then(resp => {
+// ============================
+//   WATCH DESTINO → PROPIETARIO
+// ============================
+$scope.$watch('data.destino.propietario_id', function(id) {
+  if (!id) return;
+
+  propietarioUnicoUbicacionesFactory.ubicaciones(id)
+    .then(resp => {
       $scope.ubicacionesDestino = resp.data || resp;
       $scope.data.destino.ubicacion_id = "";
       $scope.cajitasDestino = [];
+      $scope.saldoDestinoUbicacion = 0;
+      $scope.saldoDestinoCajita = undefined;
     });
+});
+
+// ============================
+//   WATCH DESTINO → UBICACION
+// ============================
+$scope.$watch('data.destino.ubicacion_id', function(uid) {
+  if (!uid || !$scope.data.destino.propietario_id) return;
+
+  // 1️⃣ Cargar cajitas
+  propietarioUnicoUbicacionesFactory.cajitas(
+    $scope.data.destino.propietario_id,
+    uid
+  ).then(resp => {
+    $scope.cajitasDestino = resp.data || resp;
+    $scope.data.destino.cajita = "";
   });
 
-  $scope.$watch('data.destino.ubicacion_id', function(uid) {
-    if (!uid || !$scope.data.destino.propietario_id) return;
+  // 2️⃣ Cargar movimientos de esa ubicación
+  ahorroFactory.query({
+    propietario_id: $scope.data.destino.propietario_id,
+    ubicacion_id: uid
+  }).$promise.then(function(resp) {
 
-    propietarioUnicoUbicacionesFactory.cajitas(
-      $scope.data.destino.propietario_id,
-      uid
-    ).then(resp => {
-      $scope.cajitasDestino = resp.data || resp;
-    });
+    const all = resp.data || resp;
+
+    const filtrados = all.filter(x =>
+      x.propietario_id == $scope.data.destino.propietario_id &&
+      x.ubicacion_id == uid
+    );
+
+    $scope.ahorrosDestino = filtrados;
+
+    // 3️⃣ Saldo total de la ubicación
+    $scope.saldoDestinoUbicacion = filtrados.reduce(
+      (sum, x) => sum + parseFloat(x.cantidad_ahorro),
+      0
+    );
+
+    // Limpiar saldo de cajita
+    $scope.saldoDestinoCajita = undefined;
   });
+});
+
+// ============================
+//   WATCH DESTINO → CAJITA
+// ============================
+$scope.$watch('data.destino.cajita', function(cajita) {
+  if (!cajita || !$scope.ahorrosDestino) {
+    $scope.saldoDestinoCajita = undefined;
+    return;
+  }
+
+  const filtrados = $scope.ahorrosDestino.filter(x =>
+    x.cajita_subcuenta === cajita
+  );
+
+  $scope.saldoDestinoCajita = filtrados.reduce(
+    (sum, x) => sum + parseFloat(x.cantidad_ahorro),
+    0
+  );
+});
+
+
+
+
 
   // ============================
   //   REALIZAR TRANSFERENCIA

@@ -24,22 +24,42 @@
 
       <div class="form-group">
         <label>Ubicación del dinero</label>
+
         <select class="form-control"
                 ng-model="data.origen.ubicacion_id"
                 ng-options="u.id as u.nombre for u in ubicacionesOrigen">
           <option value="">Seleccione</option>
         </select>
+
+        <!-- Aquí mostramos el saldo -->
+        <div ng-if="saldoOrigenUbicacion !== undefined">
+          <small class="text-primary">
+            Saldo total en la ubicación: 
+            <strong>{{ saldoOrigenUbicacion | currency:'$' }}</strong>
+          </small>
+        </div>
+
       </div>
+
 
       <div class="form-group">
         <label>Cajita / Subcuenta</label>
         <select class="form-control"
-        ng-model="data.origen.cajita"
-        ng-options="c for c in cajitasOrigen">
-            <option value="">Seleccione</option>
+                ng-model="data.origen.cajita"
+                ng-options="c for c in cajitasOrigen">
+          <option value="">Seleccione</option>
         </select>
 
+        <!-- Mostrar saldo de la cajita origen -->
+        <div ng-if="data.origen.cajita && saldoOrigenCajita !== undefined">
+          <small class="text-success">
+            Saldo en esta cajita: 
+            <strong>{{ saldoOrigenCajita | currency:'$' }}</strong>
+          </small>
+        </div>
+
       </div>
+
 
       <div class="form-group">
         <label>Descripción</label>
@@ -77,16 +97,36 @@
                 ng-options="u.id as u.nombre for u in ubicacionesDestino">
           <option value="">Seleccione</option>
         </select>
+
+        <!-- Saldo destino -->
+        <!-- Saldo total de ubicación destino -->
+        <div ng-if="data.destino.ubicacion_id && saldoDestinoUbicacion !== undefined">
+          <small class="text-info">
+            Saldo total en esta ubicación:
+            <strong>{{ saldoDestinoUbicacion | currency:'$' }}</strong>
+          </small>
+        </div>
+
       </div>
 
-        <div class="form-group">
+
+      <div class="form-group">
         <label>Cajita / Subcuenta</label>
-            <select class="form-control"
-                    ng-model="data.destino.cajita"
-                    ng-options="c for c in cajitasDestino">
-                <option value="">Seleccione</option>
-            </select>
+        <select class="form-control"
+                ng-model="data.destino.cajita"
+                ng-options="c for c in cajitasDestino">
+            <option value="">Seleccione</option>
+        </select>
+
+          <!-- Saldo de la cajita destino -->
+        <div ng-if="data.destino.cajita && saldoDestinoCajita !== undefined">
+          <small class="text-success">
+            Saldo en esta cajita:
+            <strong>{{ saldoDestinoCajita | currency:'$' }}</strong>
+          </small>
         </div>
+
+      </div>
 
 
     </div>
