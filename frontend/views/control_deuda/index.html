@@ -48,7 +48,7 @@
 
           
           <div style="text-align: right; margin-top: 20px;" >
-            <button type="submit" class="btn btn-success">
+            <button type="submit" class="btn btn-success" ng-disabled="formDeuda.$invalid">
                 Guardar
             </button>
           </div>
@@ -99,7 +99,7 @@
             <span>
                 <b ng-if="!d._abierto">▶</b>
                 <b ng-if="d._abierto">▼</b>
-                📌 {{ d.nombre }} — {{ d.descripcion }}
+                Deuda: {{ d.nombre }} — Cantidad total a pagar: {{ d.cantidad_total }}
             </span>
         </td>
     </tr>
@@ -135,7 +135,7 @@
                     ng-if="$last && d.pagado"
                     ng-click="eliminarDeuda(d.id)"
                     style="margin-left:5px;">
-                Eliminar deuda
+                Eliminar deuda completa
             </button>
 
             <button class="btn btn-info btn-xs"
