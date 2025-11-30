@@ -1,0 +1,171 @@
+<div class="page page-forms">
+  <div class="pageheader">
+    <h2><strong>Deudas</strong></h2>
+  </div>
+
+  <div class="pagecontent">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Registrar nuevas deudas</h3>
+      </div>
+
+      <div class="panel-body">
+        <form name="formDeuda" novalidate ng-submit="guardarDeuda()">
+
+          <div class="row">
+
+            <div class="col-md-4">
+              <label>Nombre de la deuda</label>
+              <input type="text" ng-model="deuda.nombre"
+                     class="form-control" placeholder="Ej. Tarjeta de crédito" required>
+            </div>
+
+            <div class="col-md-4">
+              <label>Descripción de la deuda</label>
+              <input type="text" ng-model="deuda.descripcion"
+                     class="form-control" placeholder="Ej. Mensualidad" required>
+            </div>
+
+            <div class="col-md-4">
+              <label>Cantidad total a pagar</label>
+              <input type="number" step="0.01" ng-model="deuda.cantidad_total"
+                     class="form-control" placeholder="Ej. 1500.00" required>
+            </div>
+
+            <div class="col-md-4">
+              <label>Cantidad de meses diferidos</label>
+              <input type="number" ng-model="deuda.meses_diferidos"
+                     class="form-control" placeholder="Ej. 12" required>
+            </div>
+
+            <div class="col-md-4">
+              <label>Fecha límite de pago</label>
+              <input type="date" ng-model="deuda.fecha_limite"
+                     class="form-control" required>
+            </div>
+
+          </div>
+
+          
+          <div style="text-align: right; margin-top: 20px;" >
+            <button type="submit" class="btn btn-success">
+                Guardar
+            </button>
+          </div>
+
+          
+
+        </form>
+      </div>
+
+      
+    </div>
+
+    <div>
+        
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead style="background:#f7f7f7;">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Cantidad mensual</th>
+                        <th>Abono</th>
+                        <th>Pago final</th>
+                        <th>Mes</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+    <!-- Encabezado clickable (acordeón) -->
+    <tr ng-repeat-start="d in deudas"
+        ng-click="d._abierto = !d._abierto"
+        style="cursor:pointer;">
+
+        
+        
+        <td colspan="8" style="
+            background:#e9ecef;
+            font-weight:bold;
+            font-size:15px;
+            padding:10px;
+        ">
+            <span>
+                <b ng-if="!d._abierto">▶</b>
+                <b ng-if="d._abierto">▼</b>
+                📌 {{ d.nombre }} — {{ d.descripcion }}
+            </span>
+        </td>
+    </tr>
+
+    <!-- Mensualidades SOLO si está abierto -->
+    <tr ng-repeat="m in d.control_mensualidad"
+        ng-if="d._abierto"
+        ng-repeat-end
+        ng-class="{
+                'fila-pagada': m.pagado_mensualidades,
+                'fila-naranja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 10 && diasRestantes(m.fecha_pago) > 5,
+                'fila-roja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 5 }">
+
+        <td>{{ d.nombre }}</td>
+        <td>{{ d.descripcion }}</td>
+
+        <td>${{ m.cantidad | number:2 }}</td>
+
+        <td>${{ m.abono || 0 | number:2 }}</td>
+
+        <td>${{ (m.cantidad - (m.abono || 0)) | number:2 }}</td>
+
+        <td>{{ m.mensualidad }}</td>
+        <td>{{ m.fecha_pago }}</td>
+
+        <td class="text-center">
+
+            <input type="checkbox"
+                ng-model="m.pagado_mensualidades"
+                ng-change="marcarMensualidadPagada(d, m)" />
+
+            <button class="btn btn-danger btn-xs"
+                    ng-if="$last && d.pagado"
+                    ng-click="eliminarDeuda(d.id)"
+                    style="margin-left:5px;">
+                Eliminar deuda
+            </button>
+
+            <button class="btn btn-info btn-xs"
+                    ng-click="abrirModalAbono(d, m)">
+                Abono
+            </button>
+
+        </td>
+
+    </tr>
+
+</tbody>
+
+            </table>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+.fila-pagada {
+    background-color: #d4edda !important; /* Verde suave */
+}
+
+.fila-naranja {
+    background-color: #fff3cd !important; /* Naranja suave */
+}
+
+.fila-roja {
+    background-color: #f8d7da !important; /* Rojo suave */
+}
+</style>

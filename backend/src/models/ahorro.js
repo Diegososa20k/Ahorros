@@ -29,6 +29,11 @@ module.exports = (sequelize, DataTypes) => {
     cajita_subcuenta: {
       type: DataTypes.STRING(255),
       allowNull: true
+    },
+    es_transferencia: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   }, {
     tableName: 'ahorro',

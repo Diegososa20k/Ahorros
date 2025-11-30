@@ -1,3 +1,4 @@
+
 angular.module('ahorrosApp')
 
 .controller("principalCtrl", function($scope, $http, API_URL, ahorroFactory) {
@@ -32,17 +33,19 @@ angular.module('ahorrosApp')
             $scope.listaOriginal = lista;
 
             // construir datos transformados (asegurando numbers)
+            // NOTA: incluimos es_transferencia para poder usarlo luego
             $scope.datosGrafica = lista.map(a => ({
                 cantidad: Number(a.cantidad_ahorro),
                 fecha: a.fecha_ahorro,
                 descripcion: a.descripcion || "",
-                tipo: Number(a.cantidad_ahorro) >= 0 ? "Ingreso" : "Gasto"
+                tipo: Number(a.cantidad_ahorro) >= 0 ? "Ingreso" : "Gasto",
+                es_transferencia: !!a.es_transferencia
             }));
 
-            // Mostrar últimos movimientos (los 10 más recientes)
+            // Mostrar últimos movimientos (los 10 más recientes) -> dejamos transferencias visibles
             $scope.ultimosMovimientos = $scope.datosGrafica
                 .slice()
-                .sort((a,b) => new Date(a.fecha) - new Date(b.fecha))
+                .sort((a,b) => new Date(b.fecha) - new Date(a.fecha)) // ordenar descendente por fecha
                 .slice(0, 10);
 
             // poblar selector de años (orden descendente)
@@ -58,7 +61,7 @@ angular.module('ahorrosApp')
                 $scope.anioSeleccionado = ($scope.aniosDisponibles.length ? $scope.aniosDisponibles[0] : (new Date()).getFullYear());
             }
 
-            // Calcular totales usando TODOS los registros (o filtrar por año si quieres)
+            // Calcular totales usando TODOS los registros (pero IGNORANDO transferencias)
             procesarResumen(lista);
 
             // Crear gráfica (usa listaOriginal)
@@ -75,6 +78,10 @@ angular.module('ahorrosApp')
         let gastos = 0;
 
         lista.forEach(x => {
+
+            // Ignorar si es transferencia
+            if (x.es_transferencia) return;
+
             const cantidad = Number(x.cantidad_ahorro) || 0;
             if (cantidad > 0) ingresos += cantidad;
             else gastos += Math.abs(cantidad);
@@ -98,7 +105,6 @@ angular.module('ahorrosApp')
         }
 
         if (periodo === "mes") {
-            // mes actual del año seleccionado (si quieres que el mes sea seleccionable, podemos agregar select de mes)
             return lista.filter(x => {
                 const f = new Date(x.fecha_ahorro);
                 return f.getFullYear() === anioSel && f.getMonth() === mesActual;
@@ -106,10 +112,7 @@ angular.module('ahorrosApp')
         }
 
         if (periodo === "semana") {
-            // semana actual dentro del año seleccionado (calculamos semana respecto a hoy)
-            // Nota: si hoy pertenece a otro año distinto al anioSel, la semana puede quedar vacía.
             const hoyFecha = new Date();
-            // Forzar inicioSemana relativo a 'hoy' (no al anioSel). Si deseas semana de un año distinto, habría que seleccionar fecha base.
             const inicioSemana = new Date(hoyFecha);
             inicioSemana.setDate(hoyFecha.getDate() - hoyFecha.getDay() + 1); // lunes
             const finSemana = new Date(inicioSemana);
@@ -142,8 +145,10 @@ angular.module('ahorrosApp')
             gastos = Array(12).fill(0);
 
             lista.forEach(x => {
+                // ignorar transferencias
+                if (x.es_transferencia) return;
+
                 const f = new Date(x.fecha_ahorro);
-                // si estamos en 'todos' permitimos años mezclados; si 'anio' ya filtramos por anioSel
                 const mes = f.getMonth();
                 const cantidad = Number(x.cantidad_ahorro) || 0;
                 if (cantidad > 0) ingresos[mes] += cantidad;
@@ -158,6 +163,9 @@ angular.module('ahorrosApp')
             gastos = Array(5).fill(0);
 
             lista.forEach(x => {
+                // ignorar transferencias
+                if (x.es_transferencia) return;
+
                 const f = new Date(x.fecha_ahorro);
                 const dia = f.getDate(); // 1..31
                 const semanaIndex = Math.min(4, Math.floor((dia - 1) / 7)); // 0..4
@@ -173,7 +181,6 @@ angular.module('ahorrosApp')
             ingresos = Array(7).fill(0);
             gastos = Array(7).fill(0);
 
-            // calculamos inicio/fin de la semana en base a "hoy"
             const hoy = new Date();
             const inicioSemana = new Date(hoy);
             inicioSemana.setDate(hoy.getDate() - (hoy.getDay() === 0 ? 6 : hoy.getDay() - 1)); // lunes
@@ -181,8 +188,10 @@ angular.module('ahorrosApp')
             finSemana.setDate(inicioSemana.getDate() + 6);
 
             lista.forEach(x => {
+                // ignorar transferencias
+                if (x.es_transferencia) return;
+
                 const f = new Date(x.fecha_ahorro);
-                // solo sumamos si está dentro de la semana y pertenece al anio seleccionado
                 if (f < inicioSemana || f > finSemana) return;
                 if (f.getFullYear() !== anioSel) return;
 
@@ -223,3 +232,4 @@ angular.module('ahorrosApp')
     cargarDatos();
 
 });
+

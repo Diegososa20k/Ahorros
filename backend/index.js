@@ -10,6 +10,7 @@ const propietarioRouter = require('./src/routes/propietario');
 const propietarioUnicoRouter = require('./src/routes/propietario_unico');
 const ahorroRouter = require('./src/routes/ahorro');
 const dondeAhorrarRouter = require('./src/routes/donde_ahorrar');
+const controlDeudaRouter = require('./src/routes/control_deuda');
 
 
 
@@ -28,6 +29,7 @@ app.use('/api/propietario', propietarioRouter);
 app.use('/api/propietario_unico', propietarioUnicoRouter);
 app.use('/api/donde_ahorrar', dondeAhorrarRouter);
 app.use('/api/ahorro', ahorroRouter);
+app.use('/api/control_deuda', controlDeudaRouter);
 
 
 

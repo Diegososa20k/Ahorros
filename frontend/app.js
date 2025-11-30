@@ -28,6 +28,12 @@ app.config(function($stateProvider, $urlRouterProvider) {
       url: '/ahorro',
       templateUrl: 'views/ahorro/index.html',
       controller: 'ahorroCtrl'
+    })
+
+    .state('control_deuda', {
+      url: '/control_deuda',
+      templateUrl: 'views/control_deuda/index.html',
+      controller: 'controlDeudaCtrl'
     });
     
 });

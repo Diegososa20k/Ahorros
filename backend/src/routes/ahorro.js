@@ -39,8 +39,10 @@ router.post('/', async (req, res) => {
       descripcion,
       ubicacion_id,
       propietario_id,
-      cajita_subcuenta
+      cajita_subcuenta,
+      es_transferencia   // 👈 AGREGARLO
     } = req.body;
+
 
     if (!cantidad_ahorro || !fecha_ahorro || !ubicacion_id || !propietario_id) {
       return res.status(400).json({ success: false, message: 'Faltan campos obligatorios' });
@@ -52,7 +54,8 @@ router.post('/', async (req, res) => {
       descripcion,
       ubicacion_id,
       propietario_id,
-      cajita_subcuenta
+      cajita_subcuenta,
+      es_transferencia   // 👈 GUARDARLO
     });
 
     res.json({ success: true, data: nuevo });

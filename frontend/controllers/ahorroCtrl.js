@@ -587,7 +587,9 @@ $scope.$watch('data.destino.cajita', function(cajita) {
       descripcion: $scope.data.origen.descripcion,
       ubicacion_id: $scope.data.origen.ubicacion_id,
       propietario_id: $scope.data.origen.propietario_id,
-      cajita_subcuenta: $scope.data.origen.cajita
+      cajita_subcuenta: $scope.data.origen.cajita,
+      es_transferencia: true
+
     };
 
     const ahorro = {
@@ -596,7 +598,9 @@ $scope.$watch('data.destino.cajita', function(cajita) {
       descripcion: "Transferencia desde otra cuenta",
       ubicacion_id: $scope.data.destino.ubicacion_id,
       propietario_id: $scope.data.destino.propietario_id,
-      cajita_subcuenta: $scope.data.destino.cajita
+      cajita_subcuenta: $scope.data.destino.cajita,
+      es_transferencia: true
+
     };
 
     ahorroFactory.save(gasto).$promise
