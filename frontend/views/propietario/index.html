@@ -1,74 +1,111 @@
-    <div class="container">
-  <h1 class="mt-3">Propietarios</h1>
+<link rel="stylesheet" href="assets/css/estilos.css">
 
-  <div class="row my-3">
-    <div class="col-md-6">
-      <label>Seleccionar Propietario
-        <button class="btn btn-sm btn-default" ng-click="abrirModalPropietario()">Crear propietario</button>
-      </label>
-      <select class="form-control" ng-model="nuevo.propietario_id">
-        <option ng-repeat="p in propietarios" value="{{p.id}}">{{p.nombre}}</option>
-      </select>
-
-    </div>
-
-    <div class="col-md-6">
-      <label>Ubicación del dinero</label>
-      <select class="form-control" ng-model="nuevo.ubicacion_id">
-        <option ng-repeat="u in ubicaciones" value="{{u.id}}">{{u.nombre}}</option>
-      </select>
-    </div>
+<div class="page page-forms">
+  <div class="pageheader">
+    <h2><strong>Propietarios</strong></h2>
   </div>
 
-  <div class="row my-3">
-    <div class="col-md-6">
-      <label>Tiene cajitas/subcuentas?</label>
-      <select class="form-control" ng-model="nuevo.tieneCajitas">
-        <option value="">--Selecciona--</option>
-        <option value="true">Sí</option>
-        <option value="false">No</option>
-      </select>
+  <div class="pagecontent">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Registro control del propietario</h3>
+      </div>
+
+      <div class="panel-body">
+        <div class="row">
+
+          <div class="col-md-4">
+            <label>Seleccionar Propietario</label>
+            
+            <div class="input-group">
+              <select class="form-control" ng-model="nuevo.propietario_id">
+                <option ng-repeat="p in propietarios" value="{{p.id}}">{{ p.nombre }}</option>
+              </select>
+
+              <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="abrirModalPropietario()">
+                  Crear
+                </button>
+              </span>
+            </div>
+          </div>
+
+
+          <div class="col-md-4">
+            <label>Ubicación del dinero</label>
+            <select class="form-control" ng-model="nuevo.ubicacion_id">
+              <option ng-repeat="u in ubicaciones" value="{{u.id}}">
+                {{ u.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label>¿Tiene cajitas/subcuentas?</label>
+            <select class="form-control" ng-model="nuevo.tieneCajitas">
+              <option value="">--Selecciona--</option>
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="col-md-4" ng-if="nuevo.tieneCajitas == 'true'">
+            <label>Nombre de la cajita/subcuenta</label>
+            <input
+              type="text"
+              class="form-control"
+              ng-model="nuevo.nombre_cajita_subcuenta"
+              placeholder="Ej. Fondo general o Caja chica"
+            >
+          </div>
+
+        </div>
+
+        <div style="margin-top: 20px; text-align: right;">
+          <button class="btn btn-primary" ng-click="guardarPropietario()">Guardar</button>
+        </div>
     </div>
 
-    <div class="col-md-6" ng-if="nuevo.tieneCajitas == 'true'">
-      <label>Nombre de la cajita/subcuenta</label>
-      <input type="text" class="form-control" ng-model="nuevo.nombre_cajita_subcuenta" placeholder="Ej. Fondo general o Caja chica">
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Nombre Propietario</th>
+            <th>Nombre Ubicación</th>
+            <th>Categoría Ubicación</th>
+            <th>Nombre Cajita/Subcuenta</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr ng-repeat="p in listaPropietarios">
+            <td>{{ p.propietario_unico.nombre }}</td>
+            <td>{{ p.ubicacion.nombre }}</td>
+            <td>{{ p.ubicacion.categoria.nombre }}</td>
+            <td>
+              <span ng-if="p.nombre_cajita_subcuenta">
+                {{ p.nombre_cajita_subcuenta }}
+              </span>
+              <span ng-if="!p.nombre_cajita_subcuenta">
+                No tiene
+              </span>
+            </td>
+            <td class="cell-center">
+              <div>
+                <div class="icon-circle-eliminar"
+                    ng-click="eliminarPropietario(p.id)"
+                    data-toggle="tooltip"
+                    title="Eliminar configuración del propietario">
+                  <i class="fa fa-trash"></i>
+                </div>
+              </div>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
     </div>
+
   </div>
-
-  <button class="btn btn-primary" ng-click="guardarPropietario()">Guardar</button>
-
-
-
-  <hr>
-
-<h3 class="mt-4">Lista de Propietarios Guardados</h3>
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th>Nombre Propietario</th>
-      <th>Nombre Ubicación</th>
-      <th>Categoría Ubicación</th>
-      <th>Nombre Cajita/Subcuenta</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr ng-repeat="p in listaPropietarios">
-      <td>{{ p.propietario_unico.nombre }}</td>
-      <td>{{ p.ubicacion.nombre }}</td>
-      <td>{{ p.ubicacion.categoria.nombre }}</td>
-      <td>
-        <span ng-if="p.nombre_cajita_subcuenta ">{{ p.nombre_cajita_subcuenta  }}</span>
-        <span ng-if="!p.nombre_cajita_subcuenta ">No tiene</span>
-      </td>
-      <td>
-        <button class="btn btn-danger btn-sm" ng-click="eliminarPropietario(p.id)">
-          <i class="fa fa-trash"></i> Eliminar
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
 </div>

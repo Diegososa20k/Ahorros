@@ -1,6 +1,18 @@
 angular.module('ahorrosApp')
 .controller('ahorroCtrl', function($scope, ahorroFactory, propietarioFactory, $http, API_URL, $uibModal, propietarioUnicoUbicacionesFactory) {
 
+  $scope.currentPage = 1;
+  $scope.pageSize = 10;
+
+  $scope.paginar = function(lista) {
+    if (!lista) return [];
+
+    let inicio = ($scope.currentPage - 1) * $scope.pageSize;
+    return lista.slice(inicio, inicio + $scope.pageSize);
+  };
+
+
+
   $scope.ahorros = [];
   $scope.propietarios = [];
   $scope.ubicacionesFiltradas = [];

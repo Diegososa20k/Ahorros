@@ -22,6 +22,13 @@ angular.module('ahorrosApp')
     abonar: {
           method: 'PUT',
           url: `${API_URL}/control_deuda/:id/abonar`
-      }
+    },
     });
+})
+
+
+.factory('propietarioFactory', function($resource, API_URL) {
+  return $resource(`${API_URL}/propietario/:id`, { id: '@id' }, {
+    'query': { method: 'GET', isArray: true }
+  });
 });

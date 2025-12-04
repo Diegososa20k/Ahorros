@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="assets/css/estilos.css">
+
+
 <div class="page page-forms">
   <div class="pageheader">
     <h2><strong>Deudas</strong></h2>
@@ -15,6 +18,17 @@
           <div class="row">
 
             <div class="col-md-4">
+              <label>Propietario de la deuda</label>
+              <select class="form-control"
+                      ng-model="deuda.propietario_id"
+                      ng-options="p.id as p.nombre for p in propietarios"
+                      required>
+                  <option value="">Seleccione un propietario</option>
+              </select>
+            </div>
+
+
+            <div class="col-md-4">
               <label>Nombre de la deuda</label>
               <input type="text" ng-model="deuda.nombre"
                      class="form-control" placeholder="Ej. Tarjeta de crédito" required>
@@ -23,7 +37,7 @@
             <div class="col-md-4">
               <label>Descripción de la deuda</label>
               <input type="text" ng-model="deuda.descripcion"
-                     class="form-control" placeholder="Ej. Mensualidad" required>
+                     class="form-control" placeholder="Ej. Mensualidad">
             </div>
 
             <div class="col-md-4">
@@ -48,12 +62,10 @@
 
           
           <div style="text-align: right; margin-top: 20px;" >
-            <button type="submit" class="btn btn-success">
+            <button type="submit" class="btn btn-success" ng-disabled="formDeuda.$invalid">
                 Guardar
             </button>
           </div>
-
-          
 
         </form>
       </div>
@@ -62,110 +74,118 @@
     </div>
 
     <div>
-        
+      <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+              <thead style="background:#f7f7f7;">
+                  <tr>
+                      <th>Propietario</th>
+                      <th>Nombre</th>
+                      <th>Descripción</th>
+                      <th>Cantidad mensual</th>
+                      <th>Abono</th>
+                      <th>Pago final</th>
+                      <th>Mes</th>
+                      <th>Fecha</th>
+                      <th>Acciones</th>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead style="background:#f7f7f7;">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Cantidad mensual</th>
-                        <th>Abono</th>
-                        <th>Pago final</th>
-                        <th>Mes</th>
-                        <th>Fecha</th>
-                        <th>Acciones</th>
+                  </tr>
 
-                    </tr>
+              </thead>
 
-                </thead>
+              <tbody>
 
-                <tbody>
+                <!-- Encabezado clickable (acordeón) -->
+                <tr ng-repeat-start="d in deudas"
+                    ng-click="d._abierto = !d._abierto"
+                    style="cursor:pointer;">
 
-    <!-- Encabezado clickable (acordeón) -->
-    <tr ng-repeat-start="d in deudas"
-        ng-click="d._abierto = !d._abierto"
-        style="cursor:pointer;">
+                    
+                    
+                    <td colspan="9" style="
+                        background:#e9ecef;
+                        font-weight:bold;
+                        font-size:15px;
+                        padding:10px;">
+                        <span>
+                          <b ng-if="!d._abierto">▶</b>
+                          <b ng-if="d._abierto">▼</b>
 
-        
-        
-        <td colspan="8" style="
-            background:#e9ecef;
-            font-weight:bold;
-            font-size:15px;
-            padding:10px;
-        ">
-            <span>
-                <b ng-if="!d._abierto">▶</b>
-                <b ng-if="d._abierto">▼</b>
-                📌 {{ d.nombre }} — {{ d.descripcion }}
-            </span>
-        </td>
-    </tr>
+                          <!-- ICONOS DEPENDIENDO DEL COLOR -->
+                          <span ng-if="tieneRojo(d)" style="color: red; font-weight: bold; margin-right:5px;">
+                              ⚠️ Urgente
+                          </span>
 
-    <!-- Mensualidades SOLO si está abierto -->
-    <tr ng-repeat="m in d.control_mensualidad"
-        ng-if="d._abierto"
-        ng-repeat-end
-        ng-class="{
-                'fila-pagada': m.pagado_mensualidades,
-                'fila-naranja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 10 && diasRestantes(m.fecha_pago) > 5,
-                'fila-roja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 5 }">
+                          <span ng-if="!tieneRojo(d) && tieneNaranja(d)" style="color: orange; font-weight: bold; margin-right:5px;">
+                              ⚠️ Advertencia
+                          </span>
 
-        <td>{{ d.nombre }}</td>
-        <td>{{ d.descripcion }}</td>
+                          Propietario de la deuda: {{ d.control_mensualidad[0].propietario_nombre }}
+                          — Nombre de la deuda: {{ d.nombre }}
+                          — Pago a mes(es): {{ d.control_mensualidad[0].cantidad }}
+                        </span>
 
-        <td>${{ m.cantidad | number:2 }}</td>
+                    </td>
+                </tr>
 
-        <td>${{ m.abono || 0 | number:2 }}</td>
+                <!-- Mensualidades SOLO si está abierto -->
+                <tr ng-repeat="m in d.control_mensualidad"
+                    ng-if="d._abierto"
+                    ng-repeat-end
+                    ng-class="{
+                            'fila-pagada': m.pagado_mensualidades,
+                            'fila-naranja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 10 && diasRestantes(m.fecha_pago) > 5,
+                            'fila-roja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 5 }">
+                    <td>{{ m.propietario_nombre }}</td>
+                    <td>{{ d.nombre }}</td>
+                    <td>{{ d.descripcion }}</td>
 
-        <td>${{ (m.cantidad - (m.abono || 0)) | number:2 }}</td>
+                    <td>${{ m.cantidad | number:2 }}</td>
 
-        <td>{{ m.mensualidad }}</td>
-        <td>{{ m.fecha_pago }}</td>
+                    <td>${{ m.abono || 0 | number:2 }}</td>
 
-        <td class="text-center">
+                    <td>${{ (m.cantidad - (m.abono || 0)) | number:2 }}</td>
 
-            <input type="checkbox"
-                ng-model="m.pagado_mensualidades"
-                ng-change="marcarMensualidadPagada(d, m)" />
+                    <td>{{ m.mensualidad }}</td>
+                    <td>{{ m.fecha_pago }}</td>
 
-            <button class="btn btn-danger btn-xs"
-                    ng-if="$last && d.pagado"
-                    ng-click="eliminarDeuda(d.id)"
-                    style="margin-left:5px;">
-                Eliminar deuda
-            </button>
+                    <td class="cell-center-multi">
+                      <div class="icon-row">
 
-            <button class="btn btn-info btn-xs"
-                    ng-click="abrirModalAbono(d, m)">
-                Abono
-            </button>
+                        <!-- Ícono dinámico -->
+                        <div ng-click="m.pagado_mensualidades = !m.pagado_mensualidades; marcarMensualidadPagada(d, m)"
+                            data-toggle="tooltip"
+                            ng-attr-title="{{ m.pagado_mensualidades ? 'Mensualidad pagada' : 'Mensualidad no pagada' }}"
+                            ng-class="m.pagado_mensualidades ? 'icon-circle-pagado' : 'icon-circle-no-pagado'">
+                            
+                            <i class="fa" ng-class="m.pagado_mensualidades ? 'fa-check' : 'fa-exclamation'"></i>
+                        </div>
 
-        </td>
+                        <div class="icon-circle-eliminar"
+                            data-toggle="tooltip"
+                            title="Eliminar deuda"
+                            ng-if="$last && d.pagado"
+                            ng-click="eliminarDeuda(d.id)">
+                            <i class="fa fa-trash"></i>
+                        </div>
 
-    </tr>
+                        <div class="icon-circle-abono"
+                            data-toggle="tooltip"
+                            title="Registrar abono"
+                            ng-click="abrirModalAbono(d, m)">
+                            <i class="fa fa-money"></i>
+                        </div>
 
-</tbody>
+                      </div>
+                    </td>
 
-            </table>
-        </div>
 
+
+                </tr>
+
+              </tbody>
+
+          </table>
+      </div>
     </div>
   </div>
 </div>
-
-<style>
-.fila-pagada {
-    background-color: #d4edda !important; /* Verde suave */
-}
-
-.fila-naranja {
-    background-color: #fff3cd !important; /* Naranja suave */
-}
-
-.fila-roja {
-    background-color: #f8d7da !important; /* Rojo suave */
-}
-</style>

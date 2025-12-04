@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="assets/css/estilos.css">
+
 <div class="page page-forms">
   <div class="pageheader">
     <h2><strong>Ahorros</strong></h2>
@@ -34,12 +36,11 @@
           <div class="row m-t-sm">
             <div class="col-md-4">
               <label>Propietario</label>
-              <select ng-model="nuevoAhorro.propietario_id"
-  ng-options="p.propietario_id as p.propietario_unico.nombre for p in propietarios"
-  class="form-control" required>
-  <option value="">-- Selecciona propietario --</option>
-</select>
-
+                <select ng-model="nuevoAhorro.propietario_id"
+                  ng-options="p.propietario_id as p.propietario_unico.nombre for p in propietarios"
+                  class="form-control" required>
+                  <option value="">-- Selecciona propietario --</option>
+                </select>
             </div>
 
             <div class="col-md-4">
@@ -70,14 +71,14 @@
                 </button>
 
 
-              <button class="btn btn-warning" ng-click="abrirModalGasto()">
-                <i class="fa fa-minus-circle"></i> Realizar gasto
-              </button>
+                <button class="btn btn-warning" ng-click="abrirModalGasto()">
+                  <i class="fa fa-minus-circle"></i> Realizar gasto
+                </button>
 
-              <button type="submit" class="btn btn-success"
-                      ng-disabled="formAhorro.$invalid">
-                <i class="fa fa-save"></i> Guardar ahorro
-              </button>
+                <button type="submit" class="btn btn-success"
+                        ng-disabled="formAhorro.$invalid">
+                  <i class="fa fa-save"></i> Guardar ahorro
+                </button>
             </div>
           </div>
         </form>
@@ -85,87 +86,87 @@
     </div>
 
     <!-- 🔷 TOTAL SELECCIONADO (afuera de los cards) -->
-<div class="alert alert-info" ng-if="totalSeleccionado > 0">
-  <strong>Total seleccionado:</strong> {{ totalSeleccionado | currency }}
-</div>
-
-<!-- 🔷 ACCORDION GENERAL -->
-<div class="panel-group" id="accordionAhorros">
-
-  <!-- CARD PADRE (UBICACIÓN) -->
-  <div class="panel panel-info" ng-repeat="ubic in ubicacionesConAhorros track by ubic.id">
-
-    <div class="panel-heading" role="tab" id="headingU{{ubic.id}}">
-      <div class="row" style="display:flex; align-items:center;">
-        
-        <!-- Checkbox del padre -->
-        <div class="col-xs-1">
-          <input type="checkbox" ng-model="ubic.checked" ng-change="togglePadre(ubic)">
-        </div>
-
-        <!-- Nombre de ubicación -->
-        <div class="col-xs-7">
-          <h4 class="panel-title" style="margin:0;">
-            <a role="button" data-toggle="collapse" 
-              href="#collapseU{{ubic.id}}">
-
-               <i class="fa fa-map-marker"></i> {{ ubic.nombre }}
-               <br>
-              <small><i class="fa fa-user"></i> {{ ubic.propietario }}</small>
-            </a>
-          </h4>
-        </div>
-
-        <!-- Total -->
-        <div class="col-xs-4 text-right">
-          <strong>{{ ubic.total | currency }}</strong>
-        </div>
-
-      </div>
+    <div class="alert alert-info" ng-if="totalSeleccionado > 0">
+      <strong>Total seleccionado:</strong> {{ totalSeleccionado | currency }}
     </div>
 
-    <!-- 🔹 CONTENIDO COLAPSABLE -->
-    <div id="collapseU{{ubic.id}}" class="panel-collapse collapse">
-      <div class="panel-body">
+    <!-- 🔷 ACCORDION GENERAL -->
+    <div class="panel-group" id="accordionAhorros">
 
-        <!-- HIJOS: CAJITAS / SUBCUENTAS -->
-        <div class="panel panel-default" ng-repeat="caja in ubic.cajitas track by caja.nombre">
-          <div class="panel-heading">
-            <div class="row" style="display:flex; align-items:center;">
+      <!-- CARD PADRE (UBICACIÓN) -->
+      <div class="panel panel-info" ng-repeat="ubic in ubicacionesConAhorros track by ubic.id">
 
-              <div class="col-xs-1">
-                <input type="checkbox" ng-model="caja.checked" ng-change="toggleHijo(ubic)">
-              </div>
-
-              <div class="col-xs-7">
-                <strong><i class="fa fa-archive"></i> {{ caja.nombre }}</strong>
-                  <span class="text-muted"> ({{ caja.count }} entradas)</span>
-              </div>
-
-              <div class="col-xs-4 text-right">
-                <strong>{{ caja.total | currency }}</strong>
-              </div>
-
+        <div class="panel-heading" role="tab" id="headingU{{ubic.id}}">
+          <div class="row" style="display:flex; align-items:center;">
+            
+            <!-- Checkbox del padre -->
+            <div class="col-xs-1">
+              <input type="checkbox" ng-model="ubic.checked" ng-change="togglePadre(ubic)">
             </div>
+
+            <!-- Nombre de ubicación -->
+            <div class="col-xs-7">
+              <h4 class="panel-title" style="margin:0;">
+                <a role="button" data-toggle="collapse" 
+                  href="#collapseU{{ubic.id}}">
+
+                  <i class="fa fa-map-marker"></i> {{ ubic.nombre }}
+                  <br>
+                  <small><i class="fa fa-user"></i> {{ ubic.propietario }}</small>
+                </a>
+              </h4>
+            </div>
+
+            <!-- Total -->
+            <div class="col-xs-4 text-right">
+              <strong>{{ ubic.total | currency }}</strong>
+            </div>
+
           </div>
         </div>
 
-        <!-- Cuando no existan cajitas -->
-        <div ng-if="ubic.cajitas.length === 0" class="text-muted">
-          No hay cajitas/subcuentas para esta ubicación.
+        <!-- 🔹 CONTENIDO COLAPSABLE -->
+        <div id="collapseU{{ubic.id}}" class="panel-collapse collapse">
+          <div class="panel-body">
+
+            <!-- HIJOS: CAJITAS / SUBCUENTAS -->
+            <div class="panel panel-default" ng-repeat="caja in ubic.cajitas track by caja.nombre">
+              <div class="panel-heading">
+                <div class="row" style="display:flex; align-items:center;">
+
+                  <div class="col-xs-1">
+                    <input type="checkbox" ng-model="caja.checked" ng-change="toggleHijo(ubic)">
+                  </div>
+
+                  <div class="col-xs-7">
+                    <strong><i class="fa fa-archive"></i> {{ caja.nombre }}</strong>
+                      <span class="text-muted"> ({{ caja.count }} entradas)</span>
+                  </div>
+
+                  <div class="col-xs-4 text-right">
+                    <strong>{{ caja.total | currency }}</strong>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Cuando no existan cajitas -->
+            <div ng-if="ubic.cajitas.length === 0" class="text-muted">
+              No hay cajitas/subcuentas para esta ubicación.
+            </div>
+
+          </div>
         </div>
-
       </div>
+
     </div>
-  </div>
 
-</div>
-
-<!-- Si no existen ubicaciones -->
-<div class="text-center text-muted" 
-     ng-if="(!ubicacionesConAhorros || ubicacionesConAhorros.length === 0)">
-  No hay ubicaciones con ahorros registrados.
-</div>
+    <!-- Si no existen ubicaciones -->
+    <div class="text-center text-muted" 
+        ng-if="(!ubicacionesConAhorros || ubicacionesConAhorros.length === 0)">
+      No hay ubicaciones con ahorros registrados.
+    </div>
 
 
     <!-- 🔷 TABS / PESTAÑAS -->
@@ -193,109 +194,166 @@
 
       <div class="panel-body">
 
-        <table class="table table-bordered table-striped">
-          <thead>
-  <tr>
-    <th>#</th>
-    <th>Cantidad</th>
-    <th>Fecha</th>
-    <th>Descripción</th>
-    <th>Ubicación</th>
-    <th>Propietario</th>
-    <th>Cajita / Subcuenta</th>
-    <th>Acciones</th>
-  </tr>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cantidad</th>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Ubicación</th>
+                <th>Propietario</th>
+                <th>Cajita / Subcuenta</th>
+                <th>Acciones</th>
+              </tr>
 
-  <!-- 🔎 FILTROS DENTRO DE LA TABLA -->
-  <tr>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
+              <!-- 🔎 FILTROS DENTRO DE LA TABLA -->
+              <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
 
-    <!-- Filtro Ubicación -->
-    <th>
-      <input type="text" class="form-control input-sm"
-             placeholder="Buscar..."
-             ng-model="filtro.ubicacion">
-    </th>
+                <!-- Filtro Ubicación -->
+                <th>
+                  <input type="text" class="form-control input-sm"
+                        placeholder="Buscar..."
+                        ng-model="filtro.ubicacion">
+                </th>
 
-    <!-- Filtro Propietario -->
-    <th>
-      <input type="text" class="form-control input-sm"
-             placeholder="Buscar..."
-             ng-model="filtro.propietario">
-    </th>
+                <!-- Filtro Propietario -->
+                <th>
+                  <input type="text" class="form-control input-sm"
+                        placeholder="Buscar..."
+                        ng-model="filtro.propietario">
+                </th>
 
-    <!-- Filtro Cajita / Subcuenta -->
-    <th>
-      <input type="text" class="form-control input-sm"
-             placeholder="Buscar..."
-             ng-model="filtro.cajita">
-    </th>
+                <!-- Filtro Cajita / Subcuenta -->
+                <th>
+                  <input type="text" class="form-control input-sm"
+                        placeholder="Buscar..."
+                        ng-model="filtro.cajita">
+                </th>
 
-    <th></th>
-  </tr>
-</thead>
-
-
-          <tbody>
-            <!-- TABLA AHORROS -->
-            <tr ng-if="pestanaActiva === 'ahorros'"
-    ng-repeat="a in ahorrosPositivos() 
-               | filter:filtrarTabla 
-               track by a.id">
+                <th></th>
+              </tr>
+            </thead>
 
 
-              <td>{{$index + 1}}</td>
-              <td>{{a.cantidad_ahorro | currency}}</td>
-              <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
-              <td>{{a.descripcion || '-'}}</td>
-              <td>{{a.ubicacion.nombre}}</td>
-              <td>{{a.propietario.nombre}}</td>
-              <td>{{a.cajita_subcuenta || '-'}}</td>
-              <td>
-                <button class="btn btn-danger btn-sm"
-                        ng-click="eliminarAhorro(a.id)">
-                  <i class="fa fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-
-            <!-- TABLA GASTOS -->
-            <tr ng-if="pestanaActiva === 'gastos'"
-    ng-repeat="a in ahorrosNegativos() 
-               | filter:filtrarTabla 
-               track by a.id">
+            <tbody>
+              <!-- TABLA AHORROS -->
+              <tr ng-if="pestanaActiva === 'ahorros'"
+                ng-repeat="a in paginar(ahorrosPositivos() | filter:filtrarTabla) track by a.id">
 
 
-              <td>{{$index + 1}}</td>
-              <td>{{a.cantidad_ahorro | currency}}</td>
-              <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
-              <td>{{a.descripcion || '-'}}</td>
-              <td>{{a.ubicacion.nombre}}</td>
-              <td>{{a.propietario.nombre}}</td>
-              <td>{{a.cajita_subcuenta || '-'}}</td>
-              <td>
-                <button class="btn btn-danger btn-sm"
-                        ng-click="eliminarAhorro(a.id)">
-                  <i class="fa fa-trash"></i>
-                </button>
-              </td>
-            </tr>
 
-            <!-- SIN REGISTROS -->
-            <tr ng-if="(pestanaActiva === 'ahorros' && ahorrosPositivos().length === 0) ||
-                      (pestanaActiva === 'gastos' && ahorrosNegativos().length === 0)">
-              <td colspan="8" class="text-center text-muted">
-                No hay registros en esta categoría.
-              </td>
-            </tr>
+                <td>{{$index + 1}}</td>
+                <td>{{a.cantidad_ahorro | currency}}</td>
+                <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
+                <td>{{a.descripcion || '-'}}</td>
+                <td>{{a.ubicacion.nombre}}</td>
+                <td>{{a.propietario.nombre}}</td>
+                <td>{{a.cajita_subcuenta || '-'}}</td>
+                <td class="cell-center">
+                  <div>
+                    <div class="icon-circle-eliminar"
+                        ng-click="eliminarAhorro(a.id)"
+                        data-toggle="tooltip"
+                        title="Eliminar ahorro">
+                      <i class="fa fa-trash"></i>
+                    </div>
+                  </div>
+                </td>
 
-          </tbody>
-        </table>
+
+
+
+              </tr>
+
+              <!-- TABLA GASTOS -->
+              <tr ng-if="pestanaActiva === 'gastos'"
+                ng-repeat="a in paginar(ahorrosNegativos() | filter:filtrarTabla) track by a.id">
+
+
+
+                <td>{{$index + 1}}</td>
+                <td>{{a.cantidad_ahorro | currency}}</td>
+                <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
+                <td>{{a.descripcion || '-'}}</td>
+                <td>{{a.ubicacion.nombre}}</td>
+                <td>{{a.propietario.nombre}}</td>
+                <td>{{a.cajita_subcuenta || '-'}}</td>
+                <td class="cell-center">
+                  <div>
+                    <div class="icon-circle-eliminar"
+                      ng-click="eliminarAhorro(a.id)"
+                      data-toggle="tooltip"
+                      title="Eliminar gasto">
+                      <i class="fa fa-trash"></i>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- SIN REGISTROS -->
+              <tr ng-if="(pestanaActiva === 'ahorros' && ahorrosPositivos().length === 0) ||
+                        (pestanaActiva === 'gastos' && ahorrosNegativos().length === 0)">
+                <td colspan="8" class="text-center text-muted">
+                  No hay registros en esta categoría.
+                </td>
+              </tr>
+
+            </tbody>
+            
+
+          </table>
+          <!-- PAGINACIÓN -->
+          <div class="paginacion-box">
+
+            
+            <button class="btn btn-default btn-sm"
+                    ng-disabled="currentPage === 1"
+                    ng-click="currentPage = currentPage - 1">
+              ← Anterior
+            </button>
+
+            <span style="margin: 0 12px;">
+              Página {{currentPage}}
+            </span>
+
+            <button class="btn btn-default btn-sm"
+                    ng-disabled="(currentPage * pageSize) >= 
+                      ((pestanaActiva === 'ahorros' ? ahorrosPositivos() : ahorrosNegativos()).length)"
+                    ng-click="currentPage = currentPage + 1">
+              Siguiente →
+            </button>
+
+          </div>
+
+
+          <div class="mostrar-box">
+
+            <label>
+              Mostrar:
+              <select ng-model="pageSize" ng-change="currentPage = 1"
+                      class="form-control input-sm" style="width:auto; display:inline-block;">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="999999">Todos</option>
+              </select>
+              registros
+            </label>
+          </div>
+
+
+        </div>
       </div>
     </div>
 
   </div>
 </div>
+
+

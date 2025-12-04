@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Finanzas Ahorro</title>
 
   <!-- ✅ Bootstrap y jQuery (orden correcto) -->
@@ -25,89 +27,149 @@
   <!-- ✅ Tu app principal -->
   <script src="app.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      padding-top: 56px; /* Altura del navbar superior */
-      overflow-x: hidden;
-    }
+<style>
+  /* Hace que el container del navbar use flex (centra verticalmente los hijos) */
+#topbar .container-fluid {
+  display: flex;
+  align-items: center;       /* centra verticalmente */
+  justify-content: space-between; /* botón a la izquierda, marca a la derecha */
+  padding: 0 12px;           /* espacio horizontal */
+  height: 50px;              /* uniformiza la altura del navbar */
+}
 
-    /* ===== NAVBAR SUPERIOR ===== */
-    .navbar {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 1000;
-    }
+/* Botón más pequeño y centrado */
+#toggleBtn {
+  width: 36px;               /* ancho fijo */
+  height: 36px;              /* alto fijo */
+  padding: 6px;              /* espacio interior */
+  font-size: 16px;           /* icono más pequeño */
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;   /* centra el icono dentro del botón */
+  border-radius: 4px;
+  margin: 0;                 /* eliminar márgenes extra */
+}
 
-    /* ===== SIDEBAR ===== */
-    .sidebar {
-      position: fixed;
-      top: 56px; /* Debajo del navbar */
-      left: 0;
-      height: 100%;
-      width: 230px;
-      background-color: #343a40;
-      padding-top: 10px;
-      transition: width 0.3s ease;
-      overflow-x: hidden;
-    }
+/* Ajuste del icono (opcional) para que quede nítido */
+#toggleBtn .fa {
+  font-size: 16px;
+}
 
-    .sidebar a {
-      color: #fff;
-      text-decoration: none;
-      display: block;
-      padding: 10px 15px;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
+/* Marca pegada al borde derecho */
+#topbar .navbar-brand {
+  margin: 0;                 /* elimina márgenes incorrectos */
+  padding: 0 8px;
+  white-space: nowrap;
+  order: 3;       /* manda el texto totalmente a la derecha */
+  
+  display: flex;             /* <-- esto permite centrar verticalmente */
+  align-items: center;       /* <-- centra verticalmente en el navbar */
+  height: 50px;              /* misma altura del navbar */
+}
 
-    .sidebar a:hover {
-      background-color: #495057;
-    }
+/* Asegurar que el botón quede a la izquierda */
+#topbar .btn {
+  order: -2;
+}
 
-    .sidebar.collapsed {
-      width: 60px;
-    }
+/* Si quieres que en móviles el botón se vea un poco más grande */
+@media (max-width: 480px) {
+  #toggleBtn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}
 
-    .sidebar.collapsed a span {
-      display: none;
-    }
 
-    /* ===== CONTENIDO ===== */
-    .content {
-      margin-left: 230px;
-      padding: 20px;
-      transition: margin-left 0.3s ease;
-    }
+  body {
+    margin: 0;
+    padding-top: 56px; /* Altura del navbar superior */
+    overflow-x: hidden;
+  }
 
-    .content.collapsed {
-      margin-left: 60px;
-    }
-  </style>
+  /* ===== NAVBAR SUPERIOR ===== */
+  #topbar {
+    background-color: #212529 !important;
+    border: none !important;
+  }
+
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: fixed;
+    top: 40px; /* Debajo del navbar */
+    left: 0;
+    height: 100%;
+    width: 230px;
+    background-color: #212529 !important;
+    padding-top: 10px;
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+  }
+
+  .sidebar a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px 15px;
+    font-size: 16px;
+    transition: background 0.3s;
+  }
+
+  .sidebar a:hover {
+    background-color: #495057;
+  }
+
+  /* Sidebar colapsado */
+  .sidebar.collapsed {
+    width: 60px;
+  }
+
+  .sidebar.collapsed a span {
+    display: none;
+  }
+
+  /* ===== CONTENIDO ===== */
+  .content {
+    margin-left: 230px;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+  }
+
+  .content.collapsed {
+    margin-left: 60px;
+  }
+</style>
+
 </head>
 <body>
 
-  <!-- ===== NAVBAR SUPERIOR ===== -->
-  <nav class="navbar navbar-dark bg-dark">
-    <div class="container-fluid">
-      <button class="btn btn-outline-light me-2" id="toggleBtn">
-        <i class="fa fa-bars"></i>
-      </button>
-      <a class="navbar-brand" href="#">💰 Finanzas Ahorro</a>
-    </div>
-  </nav>
-
-  <!-- ===== SIDEBAR LATERAL ===== -->
-  <div class="sidebar" id="sidebar">
-    <a ui-sref="principal"><i class="fa fa-home"></i> <span>Inicio</span></a>
-    <a ui-sref="trabajo"><i class="fa fa-briefcase"></i> <span>Trabajo</span></a>
-    <a ui-sref="ahorro"><i class="fa fa-university"></i> <span>Control Ahorro-Gastos</span></a>
-    <a ui-sref="propietario"><i class="fa fa-users"></i> <span>Propietarios y Cuentas</span></a>
-    <a ui-sref="ubicacion_dinero"><i class="fa fa-university"></i> <span>Ubicación del dinero</span></a>
-    <a ui-sref="control_deuda"><i class="fa fa-university"></i> <span>Control de deudas</span></a>
-
+ <!-- ===== NAVBAR SUPERIOR ===== -->
+<nav class="navbar" id="topbar">
+  <div class="container-fluid">
+    <button class="btn btn-outline-light me-2" id="toggleBtn">
+      <i class="fa fa-bars"></i>
+    </button>
+    <a class="navbar-brand" href="#">💰 Finanzas Ahorro</a>
   </div>
+</nav>
+
+<!-- ===== SIDEBAR LATERAL ===== -->
+<div class="sidebar" id="sidebar">
+  <a ui-sref="principal"><i class="fa fa-home"></i> <span>Inicio</span></a>
+  <a ui-sref="ahorro"><i class="fa fa-university"></i> <span>Control Ahorro-Gastos</span></a>
+  <a ui-sref="propietario"><i class="fa fa-users"></i> <span>Propietarios y Cuentas</span></a>
+  <a ui-sref="ubicacion_dinero"><i class="fa fa-university"></i> <span>Ubicación del dinero</span></a>
+  <a ui-sref="control_deuda"><i class="fa fa-university"></i> <span>Control de deudas</span></a>
+</div>
 
   <!-- ===== CONTENIDO PRINCIPAL ===== -->
   <div class="content" id="content">
@@ -115,22 +177,22 @@
   </div>
 
   <!-- ===== Script para colapsar sidebar ===== -->
-  <script>
-    document.getElementById('toggleBtn').addEventListener('click', function() {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-      document.getElementById('content').classList.toggle('collapsed');
-    });
-  </script>
+<script>
+  document.getElementById("toggleBtn").addEventListener("click", function () {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+    document.querySelector(".content").classList.toggle("collapsed");
+  });
+</script>
+
 
   <!-- ===== Controllers ===== -->
-   <script src="controllers/principalCtrl.js"></script>
+  <script src="controllers/principalCtrl.js"></script>
   <script src="controllers/ubicacionDineroCtrl.js"></script>
-  <script src="controllers/categoriaCtrl.js"></script>
   <script src="controllers/propietarioCtrl.js"></script>
   <script src="controllers/propietarioUnicoCtrl.js"></script>
   <script src="controllers/dondeAhorrarCtrl.js"></script>
   <script src="controllers/ahorroCtrl.js"></script>
-    <script src="controllers/controlDeudaCtrl.js"></script>
+  <script src="controllers/controlDeudaCtrl.js"></script>
 
   <!-- ===== Services / Factories ===== -->
   <script src="services/ubicacionDineroFactory.js"></script>

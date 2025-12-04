@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     descripcion: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     cantidad_total: {
       type: DataTypes.DECIMAL(10,2),
@@ -35,6 +35,18 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   });
+
+    ControlDeuda.associate = function(models) {
+    // En caso de que más adelante se relacione con otras tablas
+    Ahorro.belongsTo(models.UbicacionDinero, {
+      foreignKey: 'propietario_id',
+      as: 'propietario'
+    });
+
+  };
+
+
+
 
   return ControlDeuda;
 };

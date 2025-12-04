@@ -9,10 +9,6 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'views/principal.html',
       controller: 'principalCtrl'
     })
-    .state('trabajo', {
-      url: '/trabajo',
-      templateUrl: 'views/trabajo/index.html'
-    })
     .state('ubicacion_dinero', {
       url: '/ubicacion_dinero',
       templateUrl: 'views/ubicacion_dinero/index.html',

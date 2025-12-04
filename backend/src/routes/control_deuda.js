@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models');
+const propietario = require('../models/propietario');
 const { ControlDeuda } = db;
 
 // Crear deuda
 router.post('/', async (req, res) => {
   try {
-    const { nombre, descripcion, cantidad_total, meses_diferidos, fecha_limite } = req.body;
+    const { nombre, descripcion, cantidad_total, meses_diferidos, fecha_limite, propietario_id } = req.body;
 
     let mensualidades = [];
 
@@ -27,7 +28,8 @@ router.post('/', async (req, res) => {
         mensualidad: i,
         cantidad: Number(cantidadPorMes),
         fecha_pago: fechaMensual.toISOString().slice(0, 10),
-        abono: 0
+        abono: 0,
+        propietario_id: propietario_id
       });
     }
 
@@ -61,12 +63,31 @@ router.get('/', async (req, res) => {
       order: [['id', 'DESC']]
     });
 
-    res.json(deudas);
+    // Traer propietarios para nombrarlos sin hacer consultas repetidas
+    const propietarios = await db.PropietarioUnico.findAll();
+    const mapaProp = {};
+    propietarios.forEach(p => mapaProp[p.id] = p.nombre);
+
+    // Recorrer deudas y mensualidades
+    const respuesta = deudas.map(d => {
+      let mensualidades = d.control_mensualidad.map(m => ({
+        ...m,
+        propietario_nombre: mapaProp[m.propietario_id] || null
+      }));
+
+      return {
+        ...d.toJSON(),
+        control_mensualidad: mensualidades
+      };
+    });
+
+    res.json(respuesta);
 
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
 });
+
 
 router.put('/:id/pagar', async (req, res) => {
   try {

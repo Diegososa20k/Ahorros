@@ -60,30 +60,33 @@
     <div class="panel panel-default">
       <div class="panel-heading"><h3 class="panel-title">Últimos movimientos</h3></div>
       <div class="panel-body">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Descripción</th>
-              <th>Tipo</th>
-              <th>Cantidad</th>
-            </tr>
-          </thead>
+        <div class="table-responsive">
+          <table class="table table-striped" >
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            <tr ng-repeat="m in ultimosMovimientos">
-              <td>{{ m.fecha | date:'dd/MM/yyyy' }}</td>
-              <td>{{ m.descripcion }}</td>
-              <td>
-                <span class="label"
-                      ng-class="{'label-success': m.cantidad > 0, 'label-danger': m.cantidad < 0}">
-                  {{ m.cantidad > 0 ? 'Ingreso' : 'Gasto' }}
-                </span>
-              </td>
-              <td>{{ m.cantidad | currency }}</td>
-            </tr>
-          </tbody>
-        </table>
+            <tbody>
+              <tr ng-repeat="m in ultimosMovimientos">
+                <td>{{ m.fecha | date:'dd/MM/yyyy' }}</td>
+                <td>{{ m.descripcion }}</td>
+                <td>
+                  <span class="label"
+                        ng-class="{'label-success': m.cantidad > 0, 'label-danger': m.cantidad < 0}">
+                    {{ m.cantidad > 0 ? 'Ingreso' : 'Gasto' }}
+                  </span>
+                </td>
+                <td>{{ m.cantidad | currency }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
       </div>
     </div>
 
