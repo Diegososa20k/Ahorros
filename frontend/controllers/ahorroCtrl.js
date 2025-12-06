@@ -1,5 +1,5 @@
 angular.module('ahorrosApp')
-.controller('ahorroCtrl', function($scope, ahorroFactory, propietarioFactory, $http, API_URL, $uibModal, propietarioUnicoUbicacionesFactory) {
+.controller('ahorroCtrl', function($scope, ahorroFactory, propietarioFactory, $http, API_URL, $uibModal, propietarioUnicoUbicacionesFactory, Alertas) {
 
   $scope.currentPage = 1;
   $scope.pageSize = 10;
@@ -48,6 +48,17 @@ $scope.filtrarTabla = function(item) {
 
   return true;
 };
+
+$scope.limpiarFiltros = function () {
+  $scope.filtro = {
+    ubicacion: '',
+    propietario: '',
+    cajita: ''
+  };
+
+  $scope.currentPage = 1; // reinicia paginación opcional
+};
+
 
 
   $scope.ahorrosPositivos = function () {
@@ -144,31 +155,60 @@ $scope.ahorrosNegativos = function () {
   };
 
 
-  // 🔹 Guardar ahorro
-  $scope.guardarAhorro = function() {
-    if ($scope.formAhorro && $scope.formAhorro.$invalid) return;
+// 🔹 Guardar ahorro
+$scope.guardarAhorro = function() {
+  if ($scope.formAhorro && $scope.formAhorro.$invalid) return;
 
-    ahorroFactory.save($scope.nuevoAhorro).$promise
+  ahorroFactory.save($scope.nuevoAhorro).$promise
+    .then(() => {
+      Alertas.success("Guardado", "EL ahorro fue registrado correctamente");
+      $scope.nuevoAhorro = {
+        fecha_ahorro: new Date()
+      };
+      if ($scope.formAhorro) $scope.formAhorro.$setPristine();
+      return $scope.cargarAhorros();
+    })
+    .then(() => $scope.generarCards())
+    .catch(err => {
+      console.error(err);
+      Alertas.error('Error', 'No se pudo guardar el ahorro.');
+    });
+};
+
+// 🔹 Eliminar ahorro
+$scope.eliminarAhorro = function(id) {
+
+  Alertas.confirm(
+    "¿Eliminar este registro?",
+    "No podrás revertir esta acción."
+  ).then((result) => {
+
+    if (!result.isConfirmed) return;
+
+    ahorroFactory.delete({ id }).$promise
       .then(() => {
-        alert('Ahorro guardado correctamente');
-        $scope.nuevoAhorro = {
-          fecha_ahorro: new Date()
-        };
-        if ($scope.formAhorro) $scope.formAhorro.$setPristine();
+
+        Alertas.success(
+          "Eliminado",
+          "El registro fue eliminado correctamente."
+        );
+
         return $scope.cargarAhorros();
       })
       .then(() => $scope.generarCards())
-      .catch(err => console.error('Error al guardar ahorro:', err));
-  };
+      .catch(err => {
+        console.error('Error al eliminar registro:', err);
 
-  // 🔹 Eliminar ahorro
-  $scope.eliminarAhorro = function(id) {
-    if (!confirm('¿Seguro que deseas eliminar este ahorro?')) return;
-    ahorroFactory.delete({ id }).$promise
-      .then(() => $scope.cargarAhorros())
-      .then(() => $scope.generarCards())
-      .catch(err => console.error('Error al eliminar ahorro:', err));
-  };
+        Alertas.error(
+          "Error",
+          "No se pudo eliminar el registro."
+        );
+      });
+
+  });
+};
+
+
 
   // 🔹 Cargar lista de propietarios (filtrar únicos si usas esa lógica)
   $scope.cargarPropietarios = function() {
@@ -298,7 +338,7 @@ $scope.abrirModalTransferencia = function () {
 
 .controller('gastoModalCtrl', function(
   $scope, $http, API_URL,
-  $uibModalInstance, propietarios, propietarioUnicoUbicacionesFactory, ahorroFactory
+  $uibModalInstance, propietarios, propietarioUnicoUbicacionesFactory, ahorroFactory, Alertas
 ) {
 
   $scope.propietarios = propietarios;
@@ -336,23 +376,36 @@ $scope.$watch('nuevoGasto.propietario_id', function(id) {
   })
   });
 
-  // Guardar gasto
-  $scope.guardarGasto = function() {
-    const data = {
-        cantidad_ahorro: $scope.nuevoGasto.cantidad_gasto * -1,
-        fecha_ahorro: $scope.nuevoGasto.fecha_gasto,
-        descripcion: $scope.nuevoGasto.descripcion,
-        ubicacion_id: $scope.nuevoGasto.ubicacion_id,
-        propietario_id: $scope.nuevoGasto.propietario_id,
-        cajita_subcuenta: $scope.nuevoGasto.cajita_subcuenta
-    };
+$scope.guardarGasto = function() {
 
-    ahorroFactory.save(data).$promise
-  .then(() => {
+  const data = {
+    cantidad_ahorro: $scope.nuevoGasto.cantidad_gasto * -1,
+    fecha_ahorro: $scope.nuevoGasto.fecha_gasto,
+    descripcion: $scope.nuevoGasto.descripcion,
+    ubicacion_id: $scope.nuevoGasto.ubicacion_id,
+    propietario_id: $scope.nuevoGasto.propietario_id,
+    cajita_subcuenta: $scope.nuevoGasto.cajita_subcuenta
+  };
 
-        alert("Gasto registrado correctamente");
-        $uibModalInstance.close();
-      });
+  ahorroFactory.save(data).$promise
+    .then(() => {
+
+      Alertas.success(
+        "Gasto registrado",
+        "El gasto fue guardado correctamente."
+      );
+
+      $uibModalInstance.close();
+    })
+    .catch(err => {
+      console.error("Error al guardar gasto:", err);
+
+      Alertas.error(
+        "Error",
+        "No se pudo registrar el gasto."
+      );
+    });
+
 };
 
 
@@ -367,7 +420,7 @@ $scope.$watch('nuevoGasto.propietario_id', function(id) {
   $scope, $uibModalInstance,
   propietarioFactory,
   propietarioUnicoUbicacionesFactory,
-  ahorroFactory
+  ahorroFactory, Alertas
 ) {
 
   // ============================
@@ -587,41 +640,57 @@ $scope.$watch('data.destino.cajita', function(cajita) {
   // ============================
   $scope.transferir = function() {
 
-    const cant = parseFloat($scope.data.origen.cantidad);
-    if (!cant || cant <= 0) {
-      alert("Cantidad inválida");
-      return;
-    }
+  const cant = parseFloat($scope.data.origen.cantidad);
 
-    const gasto = {
-      cantidad_ahorro: cant * -1,
-      fecha_ahorro: new Date(),
-      descripcion: $scope.data.origen.descripcion,
-      ubicacion_id: $scope.data.origen.ubicacion_id,
-      propietario_id: $scope.data.origen.propietario_id,
-      cajita_subcuenta: $scope.data.origen.cajita,
-      es_transferencia: true
+  // 🔹 Validación
+  if (!cant || cant <= 0) {
+    return Alertas.warning(
+      "Cantidad inválida",
+      "Debes ingresar una cantidad mayor a 0."
+    );
+  }
 
-    };
-
-    const ahorro = {
-      cantidad_ahorro: cant,
-      fecha_ahorro: new Date(),
-      descripcion: "Transferencia desde otra cuenta",
-      ubicacion_id: $scope.data.destino.ubicacion_id,
-      propietario_id: $scope.data.destino.propietario_id,
-      cajita_subcuenta: $scope.data.destino.cajita,
-      es_transferencia: true
-
-    };
-
-    ahorroFactory.save(gasto).$promise
-      .then(() => ahorroFactory.save(ahorro).$promise)
-      .then(() => {
-        alert("Transferencia realizada correctamente");
-        $uibModalInstance.close();
-      });
+  const gasto = {
+    cantidad_ahorro: cant * -1,
+    fecha_ahorro: new Date(),
+    descripcion: $scope.data.origen.descripcion,
+    ubicacion_id: $scope.data.origen.ubicacion_id,
+    propietario_id: $scope.data.origen.propietario_id,
+    cajita_subcuenta: $scope.data.origen.cajita,
+    es_transferencia: true
   };
+
+  const ahorro = {
+    cantidad_ahorro: cant,
+    fecha_ahorro: new Date(),
+    descripcion: "Transferencia desde otra cuenta",
+    ubicacion_id: $scope.data.destino.ubicacion_id,
+    propietario_id: $scope.data.destino.propietario_id,
+    cajita_subcuenta: $scope.data.destino.cajita,
+    es_transferencia: true
+  };
+
+  // 🔹 Primero registrar el gasto, luego el ahorro
+  ahorroFactory.save(gasto).$promise
+    .then(() => ahorroFactory.save(ahorro).$promise)
+    .then(() => {
+      Alertas.success(
+        "Transferencia realizada",
+        "La transferencia se completó correctamente."
+      );
+      $uibModalInstance.close();
+    })
+    .catch(err => {
+      console.error("Error en la transferencia:", err);
+
+      Alertas.error(
+        "Error",
+        "No se pudo completar la transferencia."
+      );
+    });
+
+};
+
 
   $scope.cancelar = () => $uibModalInstance.dismiss("cancel");
 });

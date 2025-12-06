@@ -15,7 +15,14 @@
         <div class="row">
 
           <div class="col-md-4">
-            <label>Seleccionar Propietario</label>
+            <label>Seleccionar Propietario
+              <i class="fa fa-question-circle icon-help"
+                tabindex="0"
+                data-toggle="tooltip"
+                data-placement="right"
+                title="Dueño de la ubicacion del dinero y de las cajitas/sub cuentas en caso de tenerlas">
+              </i>
+            </label>
             
             <div class="input-group">
               <select class="form-control" ng-model="nuevo.propietario_id">
@@ -41,7 +48,14 @@
           </div>
 
           <div class="col-md-4">
-            <label>¿Tiene cajitas/subcuentas?</label>
+            <label>¿Tiene cajitas/subcuentas?
+              <i class="fa fa-question-circle icon-help"
+                tabindex="0"
+                data-toggle="tooltip"
+                data-placement="right"
+                title="Puedes dividir en secciones donde se ubica el dinero, Por ejemplo en nu puedes tener varias cajitas, asi que puedes usar diversas cajitas para la misma ubicación">
+              </i>
+            </label>
             <select class="form-control" ng-model="nuevo.tieneCajitas">
               <option value="">--Selecciona--</option>
               <option value="true">Sí</option>
@@ -66,46 +80,125 @@
         </div>
     </div>
 
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped">
-        <thead>
-          <tr>
-            <th>Nombre Propietario</th>
-            <th>Nombre Ubicación</th>
-            <th>Categoría Ubicación</th>
-            <th>Nombre Cajita/Subcuenta</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+    
 
-        <tbody>
-          <tr ng-repeat="p in listaPropietarios">
-            <td>{{ p.propietario_unico.nombre }}</td>
-            <td>{{ p.ubicacion.nombre }}</td>
-            <td>{{ p.ubicacion.categoria.nombre }}</td>
-            <td>
-              <span ng-if="p.nombre_cajita_subcuenta">
-                {{ p.nombre_cajita_subcuenta }}
-              </span>
-              <span ng-if="!p.nombre_cajita_subcuenta">
-                No tiene
-              </span>
-            </td>
-            <td class="cell-center">
-              <div>
-                <div class="icon-circle-eliminar"
-                    ng-click="eliminarPropietario(p.id)"
-                    data-toggle="tooltip"
-                    title="Eliminar configuración del propietario">
-                  <i class="fa fa-trash"></i>
-                </div>
+  </div>
+
+  <div class="table-responsive">
+    <div style="text-align: right; margin-bottom: 10px;">
+      <button class="btn btn-warning btn-sm" ng-click="limpiarFiltros()">
+        <i class="fa fa-eraser"></i> Limpiar filtros
+      </button>
+    </div>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Nombre Propietario</th>
+          <th>Nombre Ubicación</th>
+          <th>Categoría Ubicación</th>
+          <th>Nombre Cajita/Subcuenta</th>
+          <th>Acciones</th>
+        </tr>
+        <!-- 🔎 FILTROS -->
+        <tr>
+          <!-- Filtro Propietario -->
+          <th>
+            <input type="text" class="form-control input-sm"
+                  placeholder="Buscar propietario..."
+                  ng-model="filtroPropietario.nombre">
+          </th>
+
+          <!-- Filtro Ubicación -->
+          <th>
+            <input type="text" class="form-control input-sm"
+                  placeholder="Buscar ubicación..."
+                  ng-model="filtroPropietario.ubicacion">
+          </th>
+
+          <!-- Filtro Categoría -->
+          <th>
+            <input type="text" class="form-control input-sm"
+                  placeholder="Buscar categoría..."
+                  ng-model="filtroPropietario.categoria">
+          </th>
+
+          <!-- Filtro Cajita/Subcuenta -->
+          <th>
+            <input type="text" class="form-control input-sm"
+                  placeholder="Buscar cajita..."
+                  ng-model="filtroPropietario.cajita">
+          </th>
+
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr ng-repeat="p in paginar(listaFiltrada = (listaPropietarios | filter:filtrarPropietarios))">
+
+          <td>{{ p.propietario_unico.nombre }}</td>
+          <td>{{ p.ubicacion.nombre }}</td>
+          <td>{{ p.ubicacion.categoria.nombre }}</td>
+          <td>
+            <span ng-if="p.nombre_cajita_subcuenta">
+              {{ p.nombre_cajita_subcuenta }}
+            </span>
+            <span ng-if="!p.nombre_cajita_subcuenta">
+              No tiene
+            </span>
+          </td>
+          <td class="cell-center">
+            <div>
+              <div class="icon-circle-eliminar"
+                  ng-click="eliminarPropietario(p.id)"
+                  data-toggle="tooltip"
+                  title="Eliminar configuración del propietario">
+                <i class="fa fa-trash"></i>
               </div>
-            </td>
+            </div>
+          </td>
 
-          </tr>
-        </tbody>
-      </table>
+        </tr>
+      </tbody>
+    </table>
+    <!-- PAGINACIÓN -->
+    <div class="paginacion-box">
+
+      
+      <button class="btn btn-default btn-sm"
+              ng-disabled="currentPage === 1"
+              ng-click="currentPage = currentPage - 1">
+        ← Anterior
+      </button>
+
+      <span style="margin: 0 12px;">
+        Página {{currentPage}}
+      </span>
+
+      <button class="btn btn-default btn-sm"
+        ng-disabled="currentPage * pageSize >= listaFiltrada.length"
+        ng-click="currentPage = currentPage + 1">
+        Siguiente →
+      </button>
+
+
     </div>
 
+
+    <div class="mostrar-box">
+
+      <label>
+        Mostrar:
+        <select ng-model="pageSize" ng-change="currentPage = 1"
+                class="form-control input-sm" style="width:auto; display:inline-block;">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="999999">Todos</option>
+        </select>
+        registros
+      </label>
+    </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 angular.module('ahorrosApp')
 
-.controller('controlDeudaCtrl', function($scope, controlDeudaFactory, $uibModal, propietarioUnicoFactory) {
+.controller('controlDeudaCtrl', function($scope, controlDeudaFactory, $uibModal, propietarioUnicoFactory, Alertas) {
 
     $scope.deuda = {};
     $scope.deudas = [];
@@ -32,16 +32,37 @@ angular.module('ahorrosApp')
     // Guardar nueva deuda
     $scope.guardarDeuda = function() {
 
-        controlDeudaFactory.save($scope.deuda).$promise.then(function(response) {
-            if (response.success) {
-                alert("Deuda guardada correctamente");
-                $scope.deuda = {};
-                $scope.cargarDeudas(); // recargar tabla
-            } else {
-                alert("Error: " + response.message);
+        // Validación básica (si deseas agregar más, dime y lo hago)
+    
+
+        controlDeudaFactory.save($scope.deuda).$promise
+            .then(response => {
+
+            if (!response || !response.success) {
+                return Alertas.error(
+                "Error",
+                response.message || "No se pudo guardar la deuda."
+                );
             }
-        });
+
+            Alertas.success(
+                "Guardado",
+                "La deuda fue registrada correctamente."
+            );
+
+            $scope.deuda = {};      // limpiar formulario
+            $scope.cargarDeudas();  // refrescar tabla
+            })
+            .catch(err => {
+            console.error("Error al guardar deuda:", err);
+
+            Alertas.error(
+                "Error",
+                "Ocurrió un error al intentar guardar la deuda."
+            );
+            });
     };
+
 
 //     $scope.marcarPagado = function(d) {
 //     controlDeudaFactory.pagar({ id: d.id }, { pagado: d.pagado }).$promise.then(function() {
@@ -83,16 +104,33 @@ angular.module('ahorrosApp')
     };
 
     $scope.eliminarDeuda = function(id) {
-        if (!confirm("¿Seguro que deseas eliminar esta deuda?")) return;
 
-        controlDeudaFactory.delete({ id: id }).$promise.then(function(response) {
-            if (response.success) {
-                $scope.cargarDeudas();
-            } else {
-                alert("Error al eliminar");
+        Alertas.confirm(
+            "¿Eliminar esta deuda?",
+            "Esta acción no se puede deshacer."
+        )
+        .then(result => {
+
+            if (!result.isConfirmed) return; // Si cancela → no hace nada
+
+            return controlDeudaFactory.delete({ id }).$promise;
+        })
+        .then(response => {
+
+            if (!response || !response.success) {
+            return Alertas.error("Error", "No se pudo eliminar la deuda.");
             }
+
+            Alertas.success("Eliminada", "La deuda fue eliminada correctamente.");
+            $scope.cargarDeudas();
+        })
+        .catch(err => {
+            if (!err) return; // cancelación, no mostrar error
+            console.error(err);
+            Alertas.error("Error", "Ocurrió un error al eliminar la deuda.");
         });
     };
+
 
     $scope.abrirModalAbono = function(deuda, mensualidad) {
 
@@ -133,19 +171,19 @@ angular.module('ahorrosApp')
     $scope.cancelar = () => $uibModalInstance.dismiss('cancel');
 
     $scope.tieneRojo = function (d) {
-    return d.control_mensualidad.some(m =>
-        !m.pagado_mensualidades &&
-        $scope.diasRestantes(m.fecha_pago) <= 5
-    );
-};
+        return d.control_mensualidad.some(m =>
+            !m.pagado_mensualidades &&
+            $scope.diasRestantes(m.fecha_pago) <= 5
+        );
+    };
 
-$scope.tieneNaranja = function (d) {
-    return d.control_mensualidad.some(m =>
-        !m.pagado_mensualidades &&
-        $scope.diasRestantes(m.fecha_pago) <= 10 &&
-        $scope.diasRestantes(m.fecha_pago) > 5
-    );
-};
+    $scope.tieneNaranja = function (d) {
+        return d.control_mensualidad.some(m =>
+            !m.pagado_mensualidades &&
+            $scope.diasRestantes(m.fecha_pago) <= 10 &&
+            $scope.diasRestantes(m.fecha_pago) > 5
+        );
+    };
 
 
 
@@ -153,29 +191,49 @@ $scope.tieneNaranja = function (d) {
 
 
 
-.controller('abonoModalCtrl', function($scope, $uibModalInstance, controlDeudaFactory, deuda, mensualidad) {
+.controller('abonoModalCtrl', function($scope, $uibModalInstance, controlDeudaFactory, deuda, mensualidad, Alertas) {
 
     $scope.abono = "";
 
     $scope.guardarAbono = function() {
 
         if ($scope.abono <= 0) {
-            alert("Cantidad inválida");
-            return;
+            return Alertas.warning(
+            "Cantidad inválida",
+            "La cantidad del abono debe ser mayor a cero."
+            );
         }
 
         controlDeudaFactory.abonar(
             { id: deuda.id },
             { mensualidad: mensualidad.mensualidad, cantidad: $scope.abono }
-        ).$promise.then(function(response) {
-            if (response.success) {
-                alert("Abono registrado correctamente");
-                $uibModalInstance.close(true);
-            } else {
-                alert("Error al abonar");
+        ).$promise
+            .then(response => {
+
+            if (!response || !response.success) {
+                return Alertas.error(
+                "Error",
+                "No se pudo registrar el abono."
+                );
             }
-        });
+
+            Alertas.success(
+                "Guardado",
+                "El abono fue registrado correctamente."
+            );
+
+            $uibModalInstance.close(true);
+            })
+            .catch(err => {
+            console.error("Error al registrar abono:", err);
+
+            Alertas.error(
+                "Error",
+                "Ocurrió un problema al guardar el abono."
+            );
+            });
     };
+
 
     $scope.cancelar = function() {
         $uibModalInstance.dismiss('cancel');

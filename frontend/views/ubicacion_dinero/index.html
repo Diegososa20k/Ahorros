@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="assets/css/estilos.css">
+
 <div class="page page-forms">
   <div class="pageheader">
     <h2><strong>Ubicación del dinero</strong></h2>
@@ -21,7 +23,14 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Categoría
-                  <i class="fa fa-question-circle" tabindex="0" title="Se refiere si es en efectivo, Banco, Aplicación móvil, etc."></i>
+                  <i class="fa fa-question-circle icon-help"
+                    tabindex="0"
+                    data-toggle="tooltip"
+                    data-placement="right"
+                    title="Se refiere si el dinero está en efectivo, Banco o Aplicación móvil, etc.">
+                  </i>
+
+
                 </label>
                 <div class="input-group">
                   <select class="form-control" ng-model="nueva.categoria_id">
@@ -51,22 +60,101 @@
     </div>
 
     <div class="table-responsive">
+        <!-- 🔄 BOTÓN LIMPIAR FILTROS -->
+      <div style="text-align:right; margin-bottom:10px;">
+        <button class="btn btn-warning btn-sm" ng-click="limpiarFiltros()">
+          <i class="fa fa-eraser"></i> Limpiar filtros
+        </button>
+      </div>
       <table class="table table-striped table-bordered">
         <thead>
           <tr>
             <th>Nombre</th>
             <th>Categoría</th>
             <th>Creado</th>
+            <th>Acciones</th>
+          </tr>
+          <tr>
+            <th>
+              <input type="text" class="form-control input-sm"
+                    placeholder="Buscar nombre..."
+                    ng-model="filtroUbicacion.nombre">
+            </th>
+
+            <th>
+              <input type="text" class="form-control input-sm"
+                    placeholder="Buscar categoría..."
+                    ng-model="filtroUbicacion.categoria">
+            </th>
+
+            <th>
+              <input type="text" class="form-control input-sm"
+                    placeholder="YYYY-MM-DD"
+                    ng-model="filtroUbicacion.fecha">
+            </th>
+
+            <th></th>
           </tr>
         </thead>
-        <tbody>
-          <tr ng-repeat="u in ubicaciones | filter:filtrar">
-            <td>{{u.nombre}}</td>
-            <td>{{u.categoria && u.categoria.nombre}}</td>
-            <td>{{u.created_at | date:'yyyy-MM-dd HH:mm'}}</td>
-          </tr>
-        </tbody>
+          <tbody>
+            <tr ng-repeat="u in paginar(listaFiltrada = (ubicaciones | filter:filtrarUbicaciones))">
+
+              <td>{{u.nombre}}</td>
+              <td>{{u.categoria && u.categoria.nombre}}</td>
+              <td>{{u.created_at | date:'yyyy-MM-dd HH:mm'}}</td>
+
+              <td class="cell-center">
+                <div>
+                  <div class="icon-circle-eliminar"
+                      ng-click="eliminarUbicacion(u.id)"
+                      title="Eliminar ubicación">
+                    <i class="fa fa-trash"></i>
+                  </div>
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
       </table>
+      <!-- PAGINACIÓN -->
+      <div class="paginacion-box">
+
+        
+        <button class="btn btn-default btn-sm"
+                ng-disabled="currentPage === 1"
+                ng-click="currentPage = currentPage - 1">
+          ← Anterior
+        </button>
+
+        <span style="margin: 0 12px;">
+          Página {{currentPage}}
+        </span>
+
+        <button class="btn btn-default btn-sm"
+          ng-disabled="currentPage * pageSize >= listaFiltrada.length"
+          ng-click="currentPage = currentPage + 1">
+          Siguiente →
+        </button>
+
+
+      </div>
+
+
+      <div class="mostrar-box">
+
+        <label>
+          Mostrar:
+          <select ng-model="pageSize" ng-change="currentPage = 1"
+                  class="form-control input-sm" style="width:auto; display:inline-block;">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="999999">Todos</option>
+          </select>
+          registros
+        </label>
+      </div>
     </div>
 
   </div>
