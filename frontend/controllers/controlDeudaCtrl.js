@@ -64,6 +64,51 @@ angular.module('ahorrosApp')
     };
 
 
+
+
+    // Filtros por columna
+    $scope.filtroDeuda = {
+        propietario: "",
+        nombre: "",
+        descripcion: ""
+    };
+
+    // Función para filtrar
+    $scope.filtrarDeudas = function (d) {
+
+        // 📌 Propietario (usa el propietario de la PRIMER mensualidad)
+        if ($scope.filtroDeuda.propietario &&
+            !d.control_mensualidad[0].propietario_nombre.toLowerCase()
+                .includes($scope.filtroDeuda.propietario.toLowerCase())) {
+            return false;
+        }
+
+        // 📌 Nombre
+        if ($scope.filtroDeuda.nombre &&
+            !d.nombre.toLowerCase().includes($scope.filtroDeuda.nombre.toLowerCase())) {
+            return false;
+        }
+
+        // 📌 Descripción
+        if ($scope.filtroDeuda.descripcion &&
+            !d.descripcion.toLowerCase().includes($scope.filtroDeuda.descripcion.toLowerCase())) {
+            return false;
+        }
+
+        return true;
+    };
+
+    // Limpiar filtros
+    $scope.limpiarFiltros = function() {
+        $scope.filtroDeuda = {
+            propietario: "",
+            nombre: "",
+            descripcion: ""
+        };
+    };
+
+
+
 //     $scope.marcarPagado = function(d) {
 //     controlDeudaFactory.pagar({ id: d.id }, { pagado: d.pagado }).$promise.then(function() {
 //         $scope.cargarDeudas();

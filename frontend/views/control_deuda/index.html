@@ -82,27 +82,58 @@
 
     <div>
       <div class="table-responsive">
+        <div style="text-align:right; margin-bottom:10px;">
+          <button class="btn btn-warning btn-sm" ng-click="limpiarFiltros()">
+            <i class="fa fa-eraser"></i> Limpiar filtros
+          </button>
+        </div>
           <table class="table table-bordered table-striped">
               <thead style="background:#f7f7f7;">
-                  <tr>
-                      <th>Propietario</th>
-                      <th>Nombre</th>
-                      <th>Descripción</th>
-                      <th>Cantidad mensual</th>
-                      <th>Abono</th>
-                      <th>Pago final</th>
-                      <th>Mes</th>
-                      <th>Fecha</th>
-                      <th>Acciones</th>
+                <tr>
+                    <th>Propietario</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Cantidad mensual</th>
+                    <th>Abono</th>
+                    <th>Pago final</th>
+                    <th>Mes</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
 
-                  </tr>
+                <!-- FILA DE FILTROS -->
+                <tr>
+                    <th>
+                        <input type="text" class="form-control input-sm"
+                              placeholder="Buscar propietario..."
+                              ng-model="filtroDeuda.propietario">
+                    </th>
+                    <th>
+                        <input type="text" class="form-control input-sm"
+                              placeholder="Buscar nombre..."
+                              ng-model="filtroDeuda.nombre">
+                    </th>
+                    <th>
+                        <input type="text" class="form-control input-sm"
+                              placeholder="Buscar descripción..."
+                              ng-model="filtroDeuda.descripcion">
+                    </th>
 
-              </thead>
+                    <!-- columnas sin filtro -->
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    
+                </tr>
+            </thead>
+
 
               <tbody>
 
                 <!-- Encabezado clickable (acordeón) -->
-                <tr ng-repeat-start="d in deudas"
+                <tr ng-repeat-start="d in (deudas | filter:filtrarDeudas)"
                     ng-click="d._abierto = !d._abierto"
                     style="cursor:pointer;">
 
