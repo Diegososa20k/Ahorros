@@ -18,9 +18,8 @@
             <label>Seleccionar Propietario
               <i class="fa fa-question-circle icon-help"
                 tabindex="0"
-                data-toggle="tooltip"
                 data-placement="right"
-                title="Dueño de la ubicacion del dinero y de las cajitas/sub cuentas en caso de tenerlas">
+                uib-tooltip="Dueño de la ubicacion del dinero y de las cajitas/sub cuentas en caso de tenerlas">
               </i>
             </label>
             
@@ -51,9 +50,8 @@
             <label>¿Tiene cajitas/subcuentas?
               <i class="fa fa-question-circle icon-help"
                 tabindex="0"
-                data-toggle="tooltip"
                 data-placement="right"
-                title="Puedes dividir en secciones donde se ubica el dinero, Por ejemplo en nu puedes tener varias cajitas, asi que puedes usar diversas cajitas para la misma ubicación">
+                uib-tooltip="Puedes dividir en secciones donde se ubica el dinero, Por ejemplo en nu puedes tener varias cajitas, asi que puedes usar diversas cajitas para la misma ubicación">
               </i>
             </label>
             <select class="form-control" ng-model="nuevo.tieneCajitas">
@@ -151,8 +149,7 @@
             <div>
               <div class="icon-circle-eliminar"
                   ng-click="eliminarPropietario(p.id)"
-                  data-toggle="tooltip"
-                  title="Eliminar configuración del propietario">
+                  uib-tooltip="Eliminar configuración del propietario">
                 <i class="fa fa-trash"></i>
               </div>
             </div>

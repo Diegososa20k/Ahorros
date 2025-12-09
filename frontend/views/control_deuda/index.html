@@ -50,9 +50,9 @@
               <label>Cantidad de meses diferidos
                 <i class="fa fa-question-circle icon-help"
                     tabindex="0"
-                    data-toggle="tooltip"
+                    
                     data-placement="right"
-                    title="Se refiere a la cantidad de meses en las que se pagara la deuda">
+                    uib-tooltip="Se refiere a la cantidad de meses en las que se pagara la deuda">
                   </i>
               </label>
               <input type="number" ng-model="deuda.meses_diferidos"
@@ -191,24 +191,24 @@
 
                         <!-- Ícono dinámico -->
                         <div ng-click="m.pagado_mensualidades = !m.pagado_mensualidades; marcarMensualidadPagada(d, m)"
-                            data-toggle="tooltip"
-                            ng-attr-title="{{ m.pagado_mensualidades ? 'Mensualidad pagada' : 'Mensualidad no pagada' }}"
+                            
+                            uib-tooltip="{{ m.pagado_mensualidades ? 'Mensualidad pagada' : 'Mensualidad no pagada' }}"
                             ng-class="m.pagado_mensualidades ? 'icon-circle-pagado' : 'icon-circle-no-pagado'">
                             
                             <i class="fa" ng-class="m.pagado_mensualidades ? 'fa-check' : 'fa-exclamation'"></i>
                         </div>
 
                         <div class="icon-circle-eliminar"
-                            data-toggle="tooltip"
-                            title="Eliminar deuda"
+                            
+                            uib-tooltip="Eliminar deuda"
                             ng-if="$last && d.pagado"
                             ng-click="eliminarDeuda(d.id)">
                             <i class="fa fa-trash"></i>
                         </div>
 
                         <div class="icon-circle-abono"
-                            data-toggle="tooltip"
-                            title="Registrar abono"
+                        
+                            uib-tooltip="Registrar abono"
                             ng-click="abrirModalAbono(d, m)">
                             <i class="fa fa-money"></i>
                         </div>
