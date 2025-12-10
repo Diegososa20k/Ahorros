@@ -2,12 +2,17 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models'); // 👈 importa toda la base de datos
 const { PropietarioUnico, Propietario, UbicacionDinero } = db;
+const authMiddleware = require('../middleware/auth'); 
 
 
 // GET /api/propietario_unico  -> lista todos
-router.get('/', async (req, res) => {
+// GET /api/propietario_unico  -> lista todos
+router.get('/', authMiddleware.verificarToken, async (req, res) => {
   try {
-    const rows = await PropietarioUnico.findAll({ order: [['id','DESC']] });
+    const rows = await PropietarioUnico.findAll({
+      where: { usuario_id: req.usuario.id },  // 🔹 Filtramos por usuario
+      order: [['id','DESC']]
+    });
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -15,10 +20,15 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 // POST /api/propietario_unico  -> crear (payload: { nombre: "..." })
-router.post('/', async (req, res) => {
+// POST /api/propietario_unico  -> crear (payload: { nombre: "..." })
+router.post('/', authMiddleware.verificarToken, async (req, res) => {
   try {
-    const nueva = await PropietarioUnico.create({ nombre: req.body.nombre });
+    const nueva = await PropietarioUnico.create({
+      nombre: req.body.nombre,
+      usuario_id: req.usuario.id  // 🔹 Asignamos automáticamente el usuario logueado
+    });
     res.status(201).json(nueva);
   } catch (err) {
     console.error(err);
@@ -28,23 +38,26 @@ router.post('/', async (req, res) => {
 
 
 // Obtener ubicaciones asociadas a un propietario_unico
-router.get('/:id/ubicaciones', async (req, res) => {
+router.get('/:id/ubicaciones', authMiddleware.verificarToken, async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Buscar ubicaciones asociadas a este propietario único
+    // Verificar que el propietario pertenece al usuario logueado
+    const propietario = await PropietarioUnico.findOne({
+      where: { id, usuario_id: req.usuario.id }
+    });
+
+    if (!propietario) {
+      return res.status(404).json({ success: false, message: "Propietario no encontrado" });
+    }
+
     const ubicaciones = await db.Propietario.findAll({
       where: { propietario_id: id },
       include: [
-        {
-          model: db.UbicacionDinero,
-          as: 'ubicacion',
-          attributes: ['id', 'nombre']
-        }
+        { model: db.UbicacionDinero, as: 'ubicacion', attributes: ['id', 'nombre'] }
       ]
     });
 
-    // Extraer solo ubicaciones únicas
     const ubicacionesUnicas = [];
     const ids = new Set();
     ubicaciones.forEach(u => {
@@ -63,9 +76,18 @@ router.get('/:id/ubicaciones', async (req, res) => {
 
 
 // Obtener cajitas/subcuentas de una ubicación específica de un propietario
-router.get('/:id/ubicaciones/:ubicacionId/cajitas', async (req, res) => {
+router.get('/:id/ubicaciones/:ubicacionId/cajitas', authMiddleware.verificarToken, async (req, res) => {
   try {
     const { id, ubicacionId } = req.params;
+
+    // Verificar que el propietario pertenece al usuario logueado
+    const propietario = await PropietarioUnico.findOne({
+      where: { id, usuario_id: req.usuario.id }
+    });
+
+    if (!propietario) {
+      return res.status(404).json({ success: false, message: "Propietario no encontrado" });
+    }
 
     const registros = await db.Propietario.findAll({
       where: {
@@ -79,9 +101,7 @@ router.get('/:id/ubicaciones/:ubicacionId/cajitas', async (req, res) => {
       .map(r => r.nombre_cajita_subcuenta)
       .filter(c => c && c.trim() !== '');
 
-    if (cajitas.length === 0) {
-      cajitas.push('No tiene');
-    }
+    if (cajitas.length === 0) cajitas.push('No tiene');
 
     res.json({ success: true, data: cajitas });
   } catch (error) {

@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
+    usuario_id: {                    // <-- NUEVO CAMPO
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
      pagado: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -41,6 +45,12 @@ module.exports = (sequelize, DataTypes) => {
     Ahorro.belongsTo(models.UbicacionDinero, {
       foreignKey: 'propietario_id',
       as: 'propietario'
+    });
+
+
+    ControlDeuda.belongsTo(models.Usuario, {
+      foreignKey: 'usuario_id',
+      as: 'usuario'
     });
 
   };

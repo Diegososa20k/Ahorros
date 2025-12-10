@@ -156,17 +156,21 @@
 <body>
 
  <!-- ===== NAVBAR SUPERIOR ===== -->
-<nav class="navbar" id="topbar">
+<nav class="navbar" id="topbar" ng-show="mostrarLayout">
   <div class="container-fluid">
     <button class="btn btn-outline-light me-2" id="toggleBtn">
       <i class="fa fa-bars"></i>
     </button>
     <a class="navbar-brand" href="#">💰 Finanzas Ahorro</a>
+
+     <button class="btn btn-danger btn-sm" ng-click="logout()" ng-if="mostrarLayout" style="margin-left:auto;">
+        <i class="fa fa-sign-out"></i> Salir
+      </button>
   </div>
 </nav>
 
 <!-- ===== SIDEBAR LATERAL ===== -->
-<div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar" ng-show="mostrarLayout">
   <a ui-sref="principal"><i class="fa fa-home"></i> <span>Inicio</span></a>
   <a ui-sref="ahorro"><i class="fa fa-university"></i> <span>Control Ahorro-Gastos</span></a>
   <a ui-sref="propietario"><i class="fa fa-users"></i> <span>Propietarios y Cuentas</span></a>
@@ -175,7 +179,7 @@
 </div>
 
   <!-- ===== CONTENIDO PRINCIPAL ===== -->
-  <div class="content" id="content">
+  <div class="content" id="content" >
     <div ui-view></div>
   </div>
 
@@ -196,6 +200,8 @@
   <script src="controllers/dondeAhorrarCtrl.js"></script>
   <script src="controllers/ahorroCtrl.js"></script>
   <script src="controllers/controlDeudaCtrl.js"></script>
+  <script src="controllers/loginCtrl.js"></script>
+  <script src="controllers/registerCtrl.js"></script>
 
   <!-- ===== Services / Factories ===== -->
   <script src="services/ubicacionDineroFactory.js"></script>
@@ -206,6 +212,8 @@
   <script src="services/ahorroFactory.js"></script>
   <script src="services/propietarioUnicoUbicacionesFactory.js"></script>
   <script src="services/controlDeudaFactory.js"></script>
+  <script src="services/authService.js"></script>
+
   <script src="services/alertas.service.js"></script>
 
 

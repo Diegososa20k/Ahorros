@@ -3,9 +3,11 @@ const router = express.Router();
 const db = require('../models');
 const propietario = require('../models/propietario');
 const { ControlDeuda } = db;
+const authMiddleware = require('../middleware/auth');
+const usuario = require('../models/usuario');
 
 // Crear deuda
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware.verificarToken, async (req, res) => {
   try {
     const { nombre, descripcion, cantidad_total, meses_diferidos, fecha_limite, propietario_id } = req.body;
 
@@ -42,7 +44,8 @@ router.post('/', async (req, res) => {
       cantidad_total,
       meses_diferidos,
       fecha_limite,
-      control_mensualidad: mensualidades
+      control_mensualidad: mensualidades,
+      usuario_id: req.usuario.id
     });
 
     res.json({ success: true, data: nuevaDeuda });
@@ -57,9 +60,10 @@ module.exports = router;
 
 
 // Obtener todas las deudas
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware.verificarToken, async (req, res) => {
   try {
     const deudas = await ControlDeuda.findAll({
+      where: { usuario_id: req.usuario.id },
       order: [['id', 'DESC']]
     });
 
@@ -89,10 +93,13 @@ router.get('/', async (req, res) => {
 });
 
 
-router.put('/:id/pagar', async (req, res) => {
+// Marcar deuda completa como pagada
+router.put('/:id/pagar', authMiddleware.verificarToken, async (req, res) => {
   try {
-    const deuda = await ControlDeuda.findByPk(req.params.id);
-    if (!deuda) return res.json({ success: false, message: "No existe" });
+    const deuda = await ControlDeuda.findOne({
+      where: { id: req.params.id, usuario_id: req.usuario.id }
+    });
+    if (!deuda) return res.json({ success: false, message: "No existe o no pertenece al usuario" });
 
     deuda.pagado = req.body.pagado;
     await deuda.save();
@@ -103,89 +110,71 @@ router.put('/:id/pagar', async (req, res) => {
   }
 });
 
-
-router.delete('/:id', async (req, res) => {
+// Eliminar deuda
+router.delete('/:id', authMiddleware.verificarToken, async (req, res) => {
   try {
     const rows = await ControlDeuda.destroy({
-      where: { id: req.params.id }
+      where: { id: req.params.id, usuario_id: req.usuario.id }
     });
 
     if (rows === 0)
-      return res.json({ success: false, message: "No existe" });
+      return res.json({ success: false, message: "No existe o no pertenece al usuario" });
 
     res.json({ success: true });
-
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
 });
 
-
-router.put('/:id/pagar_mensualidad', async (req, res) => {
+// Pagar mensualidad
+router.put('/:id/pagar_mensualidad', authMiddleware.verificarToken, async (req, res) => {
   try {
     const { mensualidad, pagado } = req.body;
-    const deuda = await ControlDeuda.findByPk(req.params.id);
-
-    if (!deuda) {
-      return res.json({ success: false, message: "No existe" });
-    }
+    const deuda = await ControlDeuda.findOne({
+      where: { id: req.params.id, usuario_id: req.usuario.id }
+    });
+    if (!deuda) return res.json({ success: false, message: "No existe o no pertenece al usuario" });
 
     let mens = deuda.control_mensualidad;
-
-    // Buscar mensualidad por número
     const index = mens.findIndex(m => m.mensualidad == mensualidad);
-    if (index === -1) {
-      return res.json({ success: false, message: "No encontrada" });
-    }
+    if (index === -1) return res.json({ success: false, message: "Mensualidad no encontrada" });
 
-    // Actualizar la mensualidad
     mens[index].pagado_mensualidades = pagado;
-
-    // Guardar cambios en JSONB
     deuda.control_mensualidad = mens;
     deuda.changed("control_mensualidad", true);
 
-    // 🔥 NUEVO: marcar deuda como pagada si todas las mensualidades están pagadas
-    const todasPagadas = mens.every(m => m.pagado_mensualidades === true);
-    deuda.pagado = todasPagadas;
+    deuda.pagado = mens.every(m => m.pagado_mensualidades === true);
     deuda.changed("pagado", true);
 
     await deuda.save();
-
     return res.json({ success: true, data: deuda });
-
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
 });
 
-router.put('/:id/abonar', async (req, res) => {
+// Abonar mensualidad
+router.put('/:id/abonar', authMiddleware.verificarToken, async (req, res) => {
   try {
     const { mensualidad, cantidad } = req.body;
-
-    const deuda = await ControlDeuda.findByPk(req.params.id);
-    if (!deuda) return res.json({ success: false, message: "No existe" });
+    const deuda = await ControlDeuda.findOne({
+      where: { id: req.params.id, usuario_id: req.usuario.id }
+    });
+    if (!deuda) return res.json({ success: false, message: "No existe o no pertenece al usuario" });
 
     let mens = deuda.control_mensualidad;
-
-    // Buscar mensualidad
     const index = mens.findIndex(m => m.mensualidad == mensualidad);
-    if (index === -1)
-      return res.json({ success: false, message: "Mensualidad no encontrada" });
+    if (index === -1) return res.json({ success: false, message: "Mensualidad no encontrada" });
 
-    // Aplicar abono
     mens[index].abono = (mens[index].abono || 0) + Number(cantidad);
-
-    // Guardar JSONB
     deuda.control_mensualidad = mens;
     deuda.changed("control_mensualidad", true);
 
     await deuda.save();
-
     res.json({ success: true, data: deuda });
-
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
 });
+
 

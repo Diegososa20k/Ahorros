@@ -11,6 +11,8 @@ const propietarioUnicoRouter = require('./src/routes/propietario_unico');
 const ahorroRouter = require('./src/routes/ahorro');
 const dondeAhorrarRouter = require('./src/routes/donde_ahorrar');
 const controlDeudaRouter = require('./src/routes/control_deuda');
+const authRouter = require("./src/routes/auth");
+
 
 
 
@@ -31,6 +33,7 @@ app.use('/api/donde_ahorrar', dondeAhorrarRouter);
 app.use('/api/ahorro', ahorroRouter);
 app.use('/api/control_deuda', controlDeudaRouter);
 
+app.use("/api/auth", authRouter);
 
 
 // sincronizar (solo en dev; cuidado en prod)

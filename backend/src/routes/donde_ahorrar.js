@@ -6,7 +6,10 @@ const { DondeAhorrar } = require('../models'); // asegúrate de exportarlo en mo
 // GET /api/propietario_unico  -> lista todos
 router.get('/', async (req, res) => {
   try {
-    const rows = await DondeAhorrar.findAll({ order: [['id','DESC']] });
+    const rows = await DondeAhorrar.findAll({ 
+      where: { usuario_id: req.usuario.id },
+      order: [['id','DESC']] 
+    });
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -17,7 +20,10 @@ router.get('/', async (req, res) => {
 // POST /api/propietario_unico  -> crear (payload: { nombre: "..." })
 router.post('/', async (req, res) => {
   try {
-    const nueva = await DondeAhorrar.create({ nombre: req.body.nombre });
+    const nueva = await DondeAhorrar.create({ 
+      nombre: req.body.nombre,
+      usuario_id: req.usuario.id
+    });
     res.status(201).json(nueva);
   } catch (err) {
     console.error(err);

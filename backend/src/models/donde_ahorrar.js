@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => {
     nombre: {
       type: DataTypes.STRING(255),
       allowNull: false
-    }
+    },
+    usuario_id: {                    // <-- NUEVO CAMPO
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
   }, {
     tableName: 'donde_ahorrar',
     timestamps: true,
@@ -19,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
 
   DondeAhorrar.associate = function(models) {
     // En caso de que más adelante se relacione con otras tablas
+    Ahorro.belongsTo(models.Usuario, {
+      foreignKey: 'usuario_id',
+      as: 'usuario'
+    });
   };
 
   return DondeAhorrar;

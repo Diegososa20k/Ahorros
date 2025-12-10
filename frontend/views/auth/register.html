@@ -1,0 +1,57 @@
+<div class="container" style="margin-top: 50px; max-width: 400px;">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Crear nueva cuenta</h3>
+    </div>
+
+    <div class="panel-body">
+      <form ng-submit="register()">
+        
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" ng-model="form.nombre" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" ng-model="form.email" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" ng-model="form.password" class="form-control" required minlength="6">
+          <small class="text-muted">Mínimo 6 caracteres</small>
+        </div>
+
+        <div class="form-group">
+          <label>Confirmar contraseña</label>
+          <input type="password" ng-model="form.password2" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-block" ng-disabled="registrando">
+          <span ng-if="!registrando"><i class="fa fa-user-plus"></i> Registrarse</span>
+          <span ng-if="registrando">Registrando...</span>
+        </button>
+
+        <div class="text-center" style="margin-top:10px;" ng-if="error">
+          <p class="text-danger">{{ error }}</p>
+        </div>
+
+        <div class="text-center" style="margin-top:10px;" ng-if="success">
+          <p class="text-success">{{ success }}</p>
+        </div>
+
+      </form>
+
+      <!-- BOTÓN PARA VOLVER AL LOGIN -->
+      <hr>
+      <div class="text-center">
+        <p>¿Ya tienes cuenta?</p>
+        <button type="button" class="btn btn-default btn-block" ui-sref="login">
+          <i class="fa fa-sign-in"></i> Iniciar Sesión
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -13,6 +13,8 @@ const Propietario = require('./propietario')(sequelize, DataTypes);
 const PropietarioUnico = require('./propietario_unico')(sequelize, DataTypes);
 const Ahorro = require('./ahorro')(sequelize, DataTypes); // 🔹 <--- NUEVO
 const ControlDeuda = require('./control_deuda')(sequelize, DataTypes); // 🔹 <--- NUEVO
+const Usuario = require('./usuario')(sequelize, DataTypes);
+
 
 // === Asignar al objeto db ===
 db.Categoria = Categoria;
@@ -21,6 +23,8 @@ db.Propietario = Propietario;
 db.PropietarioUnico = PropietarioUnico;
 db.Ahorro = Ahorro; // 🔹 <--- NUEVO
 db.ControlDeuda = ControlDeuda; // 🔹 <--- NUEVO
+db.Usuario = Usuario;
+
 
 // === Relaciones ===
 

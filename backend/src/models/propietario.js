@@ -23,7 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     nombre_cajita_subcuenta: { // 🔹 nuevo campo
       type: DataTypes.STRING,
       allowNull: true
-    }
+    },
+    usuario_id: {                    // <-- NUEVO CAMPO
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
   }, {
     tableName: 'propietarios',
     timestamps: true,
@@ -42,6 +46,11 @@ module.exports = (sequelize, DataTypes) => {
     Propietario.belongsTo(models.PropietarioUnico, { 
       foreignKey: 'propietario_id',
       as: 'propietario_unico' 
+    });
+
+    PropietarioUnico.belongsTo(models.Usuario, {
+      foreignKey: 'usuario_id',
+      as: 'usuario'
     });
   };
 

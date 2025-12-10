@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => {
     nombre: {
       type: DataTypes.STRING(255),
       allowNull: false
-    }
+    },
+    usuario_id: {                    // <-- NUEVO CAMPO
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     // Si necesitas más campos agrégalos aquí
   }, {
     tableName: 'propietario', // <- cambia aquí si tu tabla se llama distinto ('propietario_unico' o 'propietarios')
@@ -21,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
   // No hay asociaciones extras (tabla independiente)
   PropietarioUnico.associate = function(models) {
     // si en el futuro relacionas algo, lo pones aquí
+    PropietarioUnico.belongsTo(models.Usuario, {
+      foreignKey: 'usuario_id',
+      as: 'usuario'
+    });
   };
 
   return PropietarioUnico;
