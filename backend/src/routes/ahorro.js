@@ -115,7 +115,7 @@ router.get('/', authMiddleware.verificarToken, async (req, res) => {
 
 
 // Eliminar un ahorro
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware.verificarToken, async (req, res) => {
   try {
     const { id } = req.params;
     const eliminado = await Ahorro.destroy({
