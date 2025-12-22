@@ -25,6 +25,7 @@
             
             <div class="input-group">
               <select class="form-control" ng-model="nuevo.propietario_id">
+                <option value="">-- Selecciona propietario--</option>
                 <option ng-repeat="p in propietarios" value="{{p.id}}">{{ p.nombre }}</option>
               </select>
 
@@ -40,6 +41,7 @@
           <div class="col-md-4">
             <label>Ubicación del dinero</label>
             <select class="form-control" ng-model="nuevo.ubicacion_id">
+              <option value="">-- Selecciona ubicación--</option>
               <option ng-repeat="u in ubicaciones" value="{{u.id}}">
                 {{ u.nombre }}
               </option>

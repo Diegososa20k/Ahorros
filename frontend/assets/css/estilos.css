@@ -189,3 +189,12 @@
   font-size: 16px;
   padding: 20px;
 }
+
+
+/* Input autollenado / edición */
+.input-editando {
+  border: 2px solid #ffc107 !important; /* amarillo */
+  background-color: #fffbe6 !important;
+  box-shadow: 0 0 6px rgba(255, 193, 7, 0.4);
+  transition: all 0.25s ease;
+}

@@ -176,17 +176,22 @@ angular.module('ahorrosApp')
     var modalInstance = $uibModal.open({
       templateUrl: 'views/propietario/modal/propietario.html',
       controller: 'ModalPropietarioUnicoCtrl',
-      size: 'md'
+      size: 'md',
+      backdrop: 'static',
+      keyboard: false 
     });
 
-    modalInstance.result.then(function(nuevoProp) {
-      if (nuevoProp) {
-        propietarioUnicoFactory.save(nuevoProp).$promise
-          .then(() => $scope.cargarPropietarios())
-          .catch(err => console.error(err));
+    modalInstance.result.then(function(huboCambios) {
+
+      if (huboCambios) {
+        // 🔄 ACTUALIZA TODO
+        $scope.cargarPropietarios();        // selects
+        $scope.cargarListaPropietarios();   // tabla principal
       }
+
     });
   };
+
 
 
   // Cargar todo al iniciar
@@ -196,30 +201,106 @@ angular.module('ahorrosApp')
 })
 
 
-.controller('ModalPropietarioUnicoCtrl', function($scope, $uibModalInstance, Alertas) {
-  $scope.nuevo = { nombre: '' };
+.controller('ModalPropietarioUnicoCtrl', function (
+  $scope,
+  $uibModalInstance,
+  propietarioUnicoFactory,
+  Alertas
+) {
 
-  $scope.guardar = function() {
+  $scope.propietarios = [];
+  $scope.form = {};
+  $scope.editando = false;
+  $scope.huboCambios = false;
 
-    if (!$scope.nuevo.nombre) {
+  // 🔹 Cargar lista
+  function cargar() {
+    propietarioUnicoFactory.query().$promise
+      .then(data => $scope.propietarios = data)
+      .catch(err => console.error(err));
+  }
+
+  // 🔹 Guardar / Editar
+  $scope.guardar = function () {
+
+    if (!$scope.form.nombre) {
       return Alertas.warning(
         "Falta información",
         "El nombre del propietario es obligatorio."
       );
     }
 
-    // Si pasa la validación, cerramos modal y enviamos los datos
-    Alertas.success(
-      "Guardado",
-      "El nuevo propietario fue registrado correctamente."
-    );
+    // EDITAR
+    if ($scope.editando) {
+      propietarioUnicoFactory.update(
+        { id: $scope.form.id },
+        $scope.form
+      ).$promise
+        .then(() => {
+          Alertas.success("Actualizado", "Propietario actualizado correctamente");
+          $scope.huboCambios = true;
+          limpiar();
+          cargar();
+        })
+        .catch(err => {
+          console.error(err);
+          Alertas.error("Error", "No se pudo actualizar el propietario.");
+        });
 
-    $uibModalInstance.close($scope.nuevo);
+    // CREAR
+    } else {
+      propietarioUnicoFactory.save($scope.form).$promise
+        .then(() => {
+          Alertas.success("Guardado", "Propietario creado correctamente");
+          $scope.huboCambios = true
+          limpiar();
+          cargar();
+        })
+        .catch(err => {
+          console.error(err);
+          Alertas.error("Error", "No se pudo guardar el propietario.");
+        });
+    }
   };
 
-
-  $scope.cancelar = function() {
-    $uibModalInstance.dismiss('cancel');
+  // 🔹 Editar
+  $scope.editar = function (p) {
+    $scope.form = angular.copy(p);
+    $scope.editando = true;
   };
+
+  // 🔹 Eliminar
+  $scope.eliminar = function (id) {
+
+    Alertas.confirm(
+      '¿Eliminar propietario?',
+      'Esta acción no se puede deshacer.'
+    ).then(result => {
+
+      if (!result.isConfirmed) return;
+
+      propietarioUnicoFactory.delete({ id }).$promise
+        .then(() => {
+          Alertas.success("Eliminado", "Propietario eliminado correctamente");
+          cargar();
+        })
+        .catch(err => {
+          console.error(err);
+          Alertas.error("Error", "No se pudo eliminar el propietario.");
+        });
+    });
+  };
+
+  function limpiar() {
+    $scope.form = {};
+    $scope.editando = false;
+  }
+
+  $scope.cancelar = function () {
+    $uibModalInstance.close(true);
+  };
+
+  // INIT
+  cargar();
 });
 

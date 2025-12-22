@@ -187,5 +187,105 @@ angular.module('ahorrosApp')
   $scope.cancelar = function() {
     $uibModalInstance.dismiss('cancel');
   };
+})
+
+.controller('ModalCategoriaCtrl', function(
+  $scope,
+  $uibModalInstance,
+  categorias,
+  categoriaFactory,
+  Alertas
+) {
+
+  $scope.categorias = angular.copy(categorias);
+  $scope.categoriaForm = {};
+  $scope.editando = false;
+
+  // 🔹 Guardar / Actualizar
+  $scope.guardarCategoria = function () {
+
+    if (!$scope.categoriaForm.nombre) {
+      return Alertas.warning(
+        "Falta información",
+        "El nombre de la categoría es obligatorio."
+      );
+    }
+
+    // EDITAR
+    if ($scope.editando) {
+      categoriaFactory.update(
+        { id: $scope.categoriaForm.id },
+        $scope.categoriaForm
+      ).$promise
+        .then(() => {
+          Alertas.success("Actualizada", "Categoría actualizada correctamente");
+          recargarCategorias();
+          limpiarForm();
+        })
+        .catch(err => {
+          console.error(err);
+          Alertas.error("Error", "No se pudo actualizar la categoría.");
+        });
+
+    // CREAR
+    } else {
+      categoriaFactory.save($scope.categoriaForm).$promise
+        .then(() => {
+          Alertas.success("Guardado", "Categoría creada correctamente");
+          recargarCategorias();
+          limpiarForm();
+        })
+        .catch(err => {
+          console.error(err);
+          Alertas.error("Error", "No se pudo guardar la categoría.");
+        });
+    }
+  };
+
+  // 🔹 Editar
+  $scope.editar = function (cat) {
+    $scope.categoriaForm = angular.copy(cat);
+    $scope.editando = true;
+  };
+
+  // 🔹 Eliminar
+  $scope.eliminar = function (id) {
+
+    Alertas.confirm(
+      '¿Eliminar categoría?',
+      'Esta acción no se puede deshacer.'
+    ).then(result => {
+
+      if (!result.isConfirmed) return;
+
+      categoriaFactory.delete({ id }).$promise
+        .then(() => {
+          Alertas.success("Eliminada", "Categoría eliminada correctamente");
+          recargarCategorias();
+        })
+        .catch(err => {
+          console.error(err);
+          Alertas.error("Error", "No se pudo eliminar la categoría.");
+        });
+    });
+  };
+
+  // 🔄 Recargar
+  function recargarCategorias() {
+    categoriaFactory.query().$promise
+      .then(data => {
+        $scope.categorias = data;
+      });
+  }
+
+  function limpiarForm() {
+    $scope.categoriaForm = {};
+    $scope.editando = false;
+  }
+
+  $scope.cancelar = function () {
+    $uibModalInstance.close(true); // para refrescar categorías afuera
+  };
 });
+
 

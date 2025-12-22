@@ -1,13 +1,75 @@
 <div class="modal-header">
   <button type="button" class="close" ng-click="cancelar()">&times;</button>
-  <h4 class="modal-title">Crear Propietario</h4>
+  <h4 class="modal-title">Propietarios</h4>
 </div>
+
 <div class="modal-body">
-  <div class="form-group">
-    <input type="text" class="form-control" placeholder="Nombre del propietario" ng-model="nuevo.nombre">
+  <div class="alert alert-warning"
+      ng-if="editando"
+      style="padding:8px 12px; font-size:13px;">
+    <i class="fa fa-pencil"></i>
+    Estás editando un propietario existente
   </div>
+
+  <!-- FORM -->
+  <div class="form-group">
+    <label>Nombre del propietario</label>
+    <input type="text"
+           class="form-control"
+           ng-class="{ 'input-editando': editando }"
+           placeholder="Ej: Juan, Familia, Empresa"
+           ng-model="form.nombre">
+  </div>
+
+  <div style="text-align: right;"> 
+    <button class="btn btn-primary btn-sm" ng-click="guardar()">
+      <i class="fa fa-save"></i> Guardar
+    </button>
+  </div>
+
+  <hr>
+
+  <!-- TABLA -->
+  <div class="table-responsive" ng-if="propietarios.length">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th style="width:120px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="p in propietarios">
+          <td>{{ p.nombre }}</td>
+          <td class="cell-center-multi">
+            <div class="icon-row">
+              <div class="icon-circle-abono"   
+                  uib-tooltip="Editar"
+                  ng-click="editar(p)">
+                  <i class="fa fa-pencil"></i>
+              </div>
+
+              <div class="icon-circle-eliminar"
+                  
+                  uib-tooltip="Eliminar categoria"
+                  
+                  ng-click="eliminar(p.id)">
+                  <i class="fa fa-trash"></i>
+              </div>
+            </div>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-muted" ng-if="!propietarios.length">
+    No hay propietarios registrados.
+  </p>
+
 </div>
+
 <div class="modal-footer">
-  <button class="btn btn-default" ng-click="cancelar()">Cancelar</button>
-  <button class="btn btn-primary" ng-click="guardar()">Guardar</button>
+  <button class="btn btn-default" ng-click="cancelar()">Cerrar</button>
 </div>

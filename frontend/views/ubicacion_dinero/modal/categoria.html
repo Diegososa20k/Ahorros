@@ -1,13 +1,78 @@
 <div class="modal-header">
   <button type="button" class="close" ng-click="cancelar()">&times;</button>
-  <h4 class="modal-title">Crear Categoría</h4>
+  <h4 class="modal-title">Categorías</h4>
 </div>
+
 <div class="modal-body">
+
+  <!-- Formulario -->
+   <div class="alert alert-warning"
+        ng-if="editando"
+        style="padding:8px 12px; font-size:13px;">
+      <i class="fa fa-pencil"></i>
+      Estás editando una categoría existente
+    </div>
+
   <div class="form-group">
-    <input type="text" class="form-control" placeholder="Ej: Banco, Efectivo, App Mobile" ng-model="nuevaCategoria.nombre">
+    <label>Nombre de la categoría</label>
+      <input type="text"
+        class="form-control"
+        ng-class="{ 'input-editando': editando }"
+        placeholder="Ej: Banco, Efectivo, App Mobile"
+        ng-model="categoriaForm.nombre">
+
   </div>
+
+  <div style="text-align: right;">
+      <button class="btn btn-primary btn-sm"
+          ng-click="guardarCategoria()">
+        <i class="fa fa-save"></i> Guardar
+      </button>
+  </div>
+
+  <hr>
+
+  <!-- Tabla -->
+  <div class="table-responsive" ng-if="categorias.length">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th style="width:120px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="c in categorias">
+          <td>{{ c.nombre }}</td>
+          <td class="cell-center-multi">
+            <div class="icon-row">
+              <div class="icon-circle-abono"   
+                  uib-tooltip="Editar"
+                  ng-click="editar(c)">
+                  <i class="fa fa-pencil"></i>
+              </div>
+
+              <div class="icon-circle-eliminar"
+                  
+                  uib-tooltip="Eliminar categoria"
+                  
+                  ng-click="eliminar(c.id)">
+                  <i class="fa fa-trash"></i>
+              </div>
+            </div>
+          </td>
+       
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-muted" ng-if="!categorias.length">
+    No hay categorías registradas.
+  </p>
+
 </div>
+
 <div class="modal-footer">
-  <button class="btn btn-default" ng-click="cancelar()">Cancelar</button>
-  <button class="btn btn-primary" ng-click="guardarCategoria()">Guardar</button>
+  <button class="btn btn-default" ng-click="cancelar()">Cerrar</button>
 </div>

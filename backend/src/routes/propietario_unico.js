@@ -111,6 +111,50 @@ router.get('/:id/ubicaciones/:ubicacionId/cajitas', authMiddleware.verificarToke
 });
 
 
+router.put('/:id', authMiddleware.verificarToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const propietario = await PropietarioUnico.findOne({
+      where: { id, usuario_id: req.usuario.id }
+    });
+
+    if (!propietario) {
+      return res.status(404).json({ error: 'Propietario no encontrado' });
+    }
+
+    await propietario.update({ nombre: req.body.nombre });
+
+    res.json(propietario);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+router.delete('/:id', authMiddleware.verificarToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const propietario = await PropietarioUnico.findOne({
+      where: { id, usuario_id: req.usuario.id }
+    });
+
+    if (!propietario) {
+      return res.status(404).json({ error: 'Propietario no encontrado' });
+    }
+
+    await propietario.destroy();
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 module.exports = router;
 
 

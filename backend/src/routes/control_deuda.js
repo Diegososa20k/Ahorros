@@ -56,7 +56,7 @@ router.post('/', authMiddleware.verificarToken, async (req, res) => {
 });
 
 
-module.exports = router;
+
 
 
 // Obtener todas las deudas
@@ -178,3 +178,4 @@ router.put('/:id/abonar', authMiddleware.verificarToken, async (req, res) => {
 });
 
 
+module.exports = router;
