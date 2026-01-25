@@ -1,16 +1,12 @@
-
 angular.module('ahorrosApp')
 
 .controller("principalCtrl", function($scope, $http, API_URL, ahorroFactory) {
 
-    $scope.periodoSeleccionado = "anio"; // por defecto
-    $scope.anioSeleccionado = null;      // se ajusta después de cargar datos
+    $scope.periodoSeleccionado = "anio";
+    $scope.anioSeleccionado = null;
     let grafica = null;
 
-    // Datos originales de backend (SIN modificar)
     $scope.listaOriginal = [];
-
-    // Datos para tabla/movimientos
     $scope.ultimosMovimientos = [];
 
     $scope.resumen = {
@@ -19,7 +15,6 @@ angular.module('ahorrosApp')
         balance: 0
     };
 
-    // años disponibles (para el select)
     $scope.aniosDisponibles = [];
 
     // ---- Cargar datos ----
@@ -28,12 +23,8 @@ angular.module('ahorrosApp')
         .then(function(resp) {
 
             const lista = resp.data || [];
-
-            // Guardamos la lista original
             $scope.listaOriginal = lista;
 
-            // construir datos transformados (asegurando numbers)
-            // NOTA: incluimos es_transferencia para poder usarlo luego
             $scope.datosGrafica = lista.map(a => ({
                 cantidad: Number(a.cantidad_ahorro),
                 fecha: a.fecha_ahorro,
@@ -42,13 +33,11 @@ angular.module('ahorrosApp')
                 es_transferencia: !!a.es_transferencia
             }));
 
-            // Mostrar últimos movimientos (los 10 más recientes) -> dejamos transferencias visibles
             $scope.ultimosMovimientos = $scope.datosGrafica
                 .slice()
-                .sort((a,b) => new Date(b.fecha) - new Date(a.fecha)) // ordenar descendente por fecha
+                .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
                 .slice(0, 10);
 
-            // poblar selector de años (orden descendente)
             const setAnios = new Set();
             lista.forEach(x => {
                 const y = new Date(x.fecha_ahorro).getFullYear();
@@ -56,15 +45,11 @@ angular.module('ahorrosApp')
             });
             $scope.aniosDisponibles = Array.from(setAnios).sort((a,b) => b - a);
 
-            // si no hay año seleccionado, usa el más reciente (o el actual)
             if (!$scope.anioSeleccionado) {
                 $scope.anioSeleccionado = ($scope.aniosDisponibles.length ? $scope.aniosDisponibles[0] : (new Date()).getFullYear());
             }
 
-            // Calcular totales usando TODOS los registros (pero IGNORANDO transferencias)
             procesarResumen(lista);
-
-            // Crear gráfica (usa listaOriginal)
             procesarGrafica($scope.listaOriginal);
         })
         .catch(err => {
@@ -78,8 +63,6 @@ angular.module('ahorrosApp')
         let gastos = 0;
 
         lista.forEach(x => {
-
-            // Ignorar si es transferencia
             if (x.es_transferencia) return;
 
             const cantidad = Number(x.cantidad_ahorro) || 0;
@@ -92,7 +75,7 @@ angular.module('ahorrosApp')
         $scope.resumen.balance = ingresos - gastos;
     }
 
-    // ---- Filtro por periodo (usa el año seleccionado cuando corresponda) ----
+    // ---- Filtro por periodo ----
     function filtrarPorPeriodo(lista) {
         const periodo = $scope.periodoSeleccionado;
         const anioSel = Number($scope.anioSeleccionado);
@@ -100,7 +83,6 @@ angular.module('ahorrosApp')
         const mesActual = hoy.getMonth();
 
         if (periodo === "anio") {
-            // solo el año seleccionado
             return lista.filter(x => new Date(x.fecha_ahorro).getFullYear() === anioSel);
         }
 
@@ -114,7 +96,7 @@ angular.module('ahorrosApp')
         if (periodo === "semana") {
             const hoyFecha = new Date();
             const inicioSemana = new Date(hoyFecha);
-            inicioSemana.setDate(hoyFecha.getDate() - hoyFecha.getDay() + 1); // lunes
+            inicioSemana.setDate(hoyFecha.getDate() - hoyFecha.getDay() + 1);
             const finSemana = new Date(inicioSemana);
             finSemana.setDate(inicioSemana.getDate() + 6);
 
@@ -124,11 +106,10 @@ angular.module('ahorrosApp')
             });
         }
 
-        // todos
         return lista;
     }
 
-    // ---- Procesar gráfica dinámicamente según periodo y año seleccionado ----
+    // ---- Procesar gráfica con estilo mejorado ----
     function procesarGrafica(listaOriginal) {
 
         const lista = filtrarPorPeriodo(listaOriginal);
@@ -138,16 +119,13 @@ angular.module('ahorrosApp')
         let ingresos = [];
         let gastos = [];
 
-        // AÑO -> meses (usa año seleccionado)
         if (periodo === "anio" || periodo === "todos") {
             labels = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
             ingresos = Array(12).fill(0);
             gastos = Array(12).fill(0);
 
             lista.forEach(x => {
-                // ignorar transferencias
                 if (x.es_transferencia) return;
-
                 const f = new Date(x.fecha_ahorro);
                 const mes = f.getMonth();
                 const cantidad = Number(x.cantidad_ahorro) || 0;
@@ -155,27 +133,21 @@ angular.module('ahorrosApp')
                 else gastos[mes] += Math.abs(cantidad);
             });
         }
-
-        // MES -> semanas del mes seleccionado (semana 1..5)
         else if (periodo === "mes") {
             labels = ["Semana 1","Semana 2","Semana 3","Semana 4","Semana 5"];
             ingresos = Array(5).fill(0);
             gastos = Array(5).fill(0);
 
             lista.forEach(x => {
-                // ignorar transferencias
                 if (x.es_transferencia) return;
-
                 const f = new Date(x.fecha_ahorro);
-                const dia = f.getDate(); // 1..31
-                const semanaIndex = Math.min(4, Math.floor((dia - 1) / 7)); // 0..4
+                const dia = f.getDate();
+                const semanaIndex = Math.min(4, Math.floor((dia - 1) / 7));
                 const cantidad = Number(x.cantidad_ahorro) || 0;
                 if (cantidad > 0) ingresos[semanaIndex] += cantidad;
                 else gastos[semanaIndex] += Math.abs(cantidad);
             });
         }
-
-        // SEMANA -> dias Lun..Dom
         else if (periodo === "semana") {
             labels = ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"];
             ingresos = Array(7).fill(0);
@@ -183,27 +155,25 @@ angular.module('ahorrosApp')
 
             const hoy = new Date();
             const inicioSemana = new Date(hoy);
-            inicioSemana.setDate(hoy.getDate() - (hoy.getDay() === 0 ? 6 : hoy.getDay() - 1)); // lunes
+            inicioSemana.setDate(hoy.getDate() - (hoy.getDay() === 0 ? 6 : hoy.getDay() - 1));
             const finSemana = new Date(inicioSemana);
             finSemana.setDate(inicioSemana.getDate() + 6);
 
             lista.forEach(x => {
-                // ignorar transferencias
                 if (x.es_transferencia) return;
-
                 const f = new Date(x.fecha_ahorro);
                 if (f < inicioSemana || f > finSemana) return;
                 if (f.getFullYear() !== anioSel) return;
 
-                const dia = f.getDay(); // 0 dom .. 6 sab
-                const index = dia === 0 ? 6 : dia - 1; // lunes=0
+                const dia = f.getDay();
+                const index = dia === 0 ? 6 : dia - 1;
                 const cantidad = Number(x.cantidad_ahorro) || 0;
                 if (cantidad > 0) ingresos[index] += cantidad;
                 else gastos[index] += Math.abs(cantidad);
             });
         }
 
-        // renderizar
+        // 🎨 Renderizar con estilo moderno
         const ctx = document.getElementById('graficaIngresosGastos');
         if (grafica) grafica.destroy();
 
@@ -212,24 +182,114 @@ angular.module('ahorrosApp')
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Ingresos', data: ingresos, backgroundColor: "rgba(40,167,69,0.6)" },
-                    { label: 'Gastos', data: gastos, backgroundColor: "rgba(220,53,69,0.6)" }
+                    {
+                        label: 'Ingresos',
+                        data: ingresos,
+                        backgroundColor: 'rgba(87, 199, 133, 0.8)',
+                        borderColor: 'rgba(87, 199, 133, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        hoverBackgroundColor: 'rgba(87, 199, 133, 1)',
+                    },
+                    {
+                        label: 'Gastos',
+                        data: gastos,
+                        backgroundColor: 'rgba(239, 71, 111, 0.8)',
+                        borderColor: 'rgba(239, 71, 111, 1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        hoverBackgroundColor: 'rgba(239, 71, 111, 1)',
+                    }
                 ]
             },
             options: {
                 responsive: true,
-                scales: { y: { beginAtZero: true } }
+                maintainAspectRatio: true,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 13,
+                                weight: '600',
+                                family: "'Inter', 'Segoe UI', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(13, 59, 79, 0.95)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        padding: 12,
+                        borderColor: 'rgba(21, 152, 149, 0.5)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += '$' + context.parsed.y.toLocaleString('es-MX', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            color: '#6b7280'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            color: '#6b7280',
+                            callback: function(value) {
+                                return '$' + value.toLocaleString('es-MX');
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 800,
+                    easing: 'easeInOutQuart'
+                }
             }
         });
     }
 
-    // ---- Evento del select ----
     $scope.actualizarGrafica = function() {
         procesarGrafica($scope.listaOriginal);
     };
 
-    // ---- Ejecutar al iniciar ----
     cargarDatos();
 
 });
-

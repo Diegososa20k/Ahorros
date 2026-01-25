@@ -5,91 +5,100 @@
 
   <div class="pagecontent">
 
-    
-
-    <!-- RESUMEN -->
-    <div class="row">
+    <!-- 💰 RESUMEN FINANCIERO -->
+    <div class="row" style="margin-bottom: 24px;">
       <div class="col-md-4">
-        <div class="alert alert-success text-center">
-          <h3>{{ resumen.totalIngresos | currency }}</h3>
-          <small>Total Ingresos</small>
+        <div class="finance-card ingresos">
+          <div class="finance-card-icon">
+            <i class="fa fa-arrow-up"></i>
+          </div>
+          <div class="finance-card-label">Total Ingresos</div>
+          <div class="finance-card-amount">{{ resumen.totalIngresos | currency }}</div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="alert alert-danger text-center">
-          <h3>{{ resumen.totalGastos | currency }}</h3>
-          <small>Total Gastos</small>
+        <div class="finance-card gastos">
+          <div class="finance-card-icon">
+            <i class="fa fa-arrow-down"></i>
+          </div>
+          <div class="finance-card-label">Total Gastos</div>
+          <div class="finance-card-amount">{{ resumen.totalGastos | currency }}</div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="alert alert-info text-center">
-          <h3>{{ resumen.balance | currency }}</h3>
-          <small>Balance General</small>
+        <div class="finance-card balance">
+          <div class="finance-card-icon">
+            <i class="fa fa-balance-scale"></i>
+          </div>
+          <div class="finance-card-label">Balance General</div>
+          <div class="finance-card-amount">{{ resumen.balance | currency }}</div>
         </div>
       </div>
     </div>
 
-    <!-- GRAFICA -->
-    <div class="panel panel-default">
-      <div class="panel-heading"><h3 class="panel-title">Ingresos vs Gastos por mes</h3></div>
-      <div class="panel-body">
+    <!-- 📊 GRÁFICA -->
+    <div class="chart-panel">
+      <div class="chart-panel-header">
+        <h3 class="chart-title">
+          <i class="fa fa-line-chart" style="margin-right: 8px; color: var(--primary-finance);"></i>
+          Ingresos vs Gastos
+        </h3>
         
-        <div class="form-inline" style="margin-bottom:10px;">
-            <label style="margin-right:8px;">Periodo:</label>
-            <select ng-model="periodoSeleccionado" ng-change="actualizarGrafica()" class="form-control" style="width:180px; margin-right:8px;">
-                <option value="mes">Mes actual</option>
-                <option value="semana">Semana actual</option>
-                <option value="anio">Año</option>
-                <!-- <option value="todos">Todos los años</option> -->
-            </select>
+        <div class="chart-controls">
+          <select ng-model="periodoSeleccionado" ng-change="actualizarGrafica()">
+            <option value="mes">Mes actual</option>
+            <option value="semana">Semana actual</option>
+            <option value="anio">Año</option>
+          </select>
 
-            <!-- Selector de año (se muestra siempre, pero puedes ocultarlo si periodo === 'todos' si prefieres) -->
-            <select ng-model="anioSeleccionado" ng-change="actualizarGrafica()" class="form-control" style="width:120px;">
-                <option ng-repeat="y in aniosDisponibles" value="{{y}}">{{y}}</option>
-            </select>
+          <select ng-model="anioSeleccionado" ng-change="actualizarGrafica()">
+            <option ng-repeat="y in aniosDisponibles" value="{{y}}">{{y}}</option>
+          </select>
         </div>
-
-
-        <canvas id="graficaIngresosGastos" height="120"></canvas>
       </div>
+
+      <canvas id="graficaIngresosGastos" height="100"></canvas>
     </div>
 
-    <!-- ÚLTIMOS MOVIMIENTOS -->
-    <div class="panel panel-default">
-      <div class="panel-heading"><h3 class="panel-title">Últimos movimientos</h3></div>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-striped" >
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Tipo</th>
-                <th>Cantidad</th>
-              </tr>
-            </thead>
+    <!-- 📋 ÚLTIMOS MOVIMIENTOS -->
+    <div class="movements-panel">
+      <h3 class="chart-title" style="margin-bottom: 24px;">
+        <i class="fa fa-history" style="margin-right: 8px; color: var(--primary-finance);"></i>
+        Últimos movimientos
+      </h3>
+      
+      <div class="table-responsive">
+        <table class="movements-table">
+          <thead>
+            <tr>
+              <th><i class="fa fa-calendar"></i> Fecha</th>
+              <th><i class="fa fa-file-text"></i> Descripción</th>
+              <th><i class="fa fa-tag"></i> Tipo</th>
+              <th><i class="fa fa-dollar"></i> Cantidad</th>
+            </tr>
+          </thead>
 
-            <tbody>
-              <tr ng-repeat="m in ultimosMovimientos">
-                <td>{{ m.fecha | date:'dd/MM/yyyy' }}</td>
-                <td>{{ m.descripcion }}</td>
-                <td>
-                  <span class="label"
-                        ng-class="{'label-success': m.cantidad > 0, 'label-danger': m.cantidad < 0}">
-                    {{ m.cantidad > 0 ? 'Ingreso' : 'Gasto' }}
-                  </span>
-                </td>
-                <td>{{ m.cantidad | currency }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
+          <tbody>
+            <tr ng-repeat="m in ultimosMovimientos">
+              <td>{{ m.fecha | date:'dd/MM/yyyy' }}</td>
+              <td>{{ m.descripcion || 'Sin descripción' }}</td>
+              <td>
+                <span class="movement-badge" ng-class="{'ingreso': m.cantidad > 0, 'gasto': m.cantidad < 0}">
+                  {{ m.cantidad > 0 ? 'Ingreso' : 'Gasto' }}
+                </span>
+              </td>
+              <td>
+                <span class="movement-amount" ng-class="{'positive': m.cantidad > 0, 'negative': m.cantidad < 0}">
+                  {{ m.cantidad | currency }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
   </div>
 </div>
-    

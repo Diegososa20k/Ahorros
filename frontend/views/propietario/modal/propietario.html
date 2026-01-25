@@ -1,75 +1,225 @@
-<div class="modal-header">
-  <button type="button" class="close" ng-click="cancelar()">&times;</button>
-  <h4 class="modal-title">Propietarios</h4>
+<div class="modal-header" style="background: linear-gradient(135deg, var(--primary-finance) 0%, var(--secondary-finance) 100%); border: none; padding: 20px 24px; position: relative;">
+  <button type="button" class="close" ng-click="cancelar()" 
+          style="position: absolute; right: 20px; top: 20px; color: white; opacity: 0.9; font-size: 28px; font-weight: 300; text-shadow: none;">
+    &times;
+  </button>
+  <h3 class="modal-title" style="color: white; font-weight: 600; font-size: 20px; margin: 0; display: flex; align-items: center;">
+    <i class="fa fa-users" style="margin-right: 10px;"></i>
+    Propietarios
+  </h3>
 </div>
 
-<div class="modal-body">
-  <div class="alert alert-warning"
-      ng-if="editando"
-      style="padding:8px 12px; font-size:13px;">
-    <i class="fa fa-pencil"></i>
-    Estás editando un propietario existente
+<div class="modal-body" style="padding: 24px;">
+  <div ng-if="editando" 
+       style="padding: 12px 16px; margin-bottom: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; border-left: 4px solid var(--warning-finance); box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);">
+    <div style="display: flex; align-items: center; color: #92400e;">
+      <i class="fa fa-pencil" style="margin-right: 10px; font-size: 16px;"></i>
+      <span style="font-weight: 600; font-size: 14px;">Estás editando un propietario existente</span>
+    </div>
   </div>
 
-  <!-- FORM -->
-  <div class="form-group">
-    <label>Nombre del propietario</label>
-    <input type="text"
-           class="form-control"
-           ng-class="{ 'input-editando': editando }"
-           placeholder="Ej: Juan, Familia, Empresa"
-           ng-model="form.nombre">
+  <!-- FORMULARIO -->
+  <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid var(--primary-finance);">
+    <div class="form-group" style="margin-bottom: 16px;">
+      <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+        Nombre del propietario
+      </label>
+      <input type="text"
+             class="form-control input-propietario"
+             ng-class="{ 'input-editando': editando }"
+             placeholder="Ej: Juan, Familia, Empresa"
+             ng-model="form.nombre">
+    </div>
   </div>
 
-  <div style="text-align: right;"> 
-    <button class="btn btn-primary btn-sm" ng-click="guardar()">
-      <i class="fa fa-save"></i> Guardar
-    </button>
-  </div>
-
-  <hr>
+  <hr style="border: none; border-top: 2px solid #e5e7eb; margin: 24px 0;">
 
   <!-- TABLA -->
-  <div class="table-responsive" ng-if="propietarios.length">
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th style="width:120px;">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="p in propietarios">
-          <td>{{ p.nombre }}</td>
-          <td class="cell-center-multi">
-            <div class="icon-row">
-              <div class="icon-circle-abono"   
-                  uib-tooltip="Editar"
-                  ng-click="editar(p)">
-                  <i class="fa fa-pencil"></i>
-              </div>
+  <div class="movements-panel">
+    <h4 style="margin: 0 0 16px 0; color: var(--dark-finance); font-weight: 600; font-size: 16px; display: flex; align-items: center;">
+      <i class="fa fa-list" style="margin-right: 8px; color: var(--primary-finance);"></i>
+      Propietarios registrados
+    </h4>
 
-              <div class="icon-circle-eliminar"
-                  
-                  uib-tooltip="Eliminar categoria"
-                  
-                  ng-click="eliminar(p.id)">
-                  <i class="fa fa-trash"></i>
-              </div>
-            </div>
-          </td>
+    <div class="table-responsive" ng-if="propietarios.length" style="overflow-x: auto; overflow-y: hidden;">
+      <table class="table table-bordered table-striped" style="margin-bottom: 0;">
+        <thead>
+          <tr style="background: linear-gradient(135deg, var(--primary-finance), var(--secondary-finance)); color: white;">
+            <th style="border: none; padding: 14px 12px; font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;">
+              <i class="fa fa-user" style="margin-right: 6px;"></i>
+              Nombre
+            </th>
+            <th style="border: none; width:120px; padding: 14px 12px; font-weight: 600; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;">
+              <i class="fa fa-cog" style="margin-right: 6px;"></i>
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="p in propietarios" class="fila-tabla-hover-prop">
+            <td style="border: 1px solid #e5e7eb; padding: 12px; vertical-align: middle; font-weight: 500;">
+              {{ p.nombre }}
+            </td>
+            <td class="cell-center-multi" style="border: 1px solid #e5e7eb; padding: 12px; vertical-align: middle;">
+              <div class="icon-row">
+                <div class="icon-circle-abono"   
+                    uib-tooltip="Editar"
+                    ng-click="editar(p)">
+                    <i class="fa fa-pencil"></i>
+                </div>
 
-        </tr>
-      </tbody>
-    </table>
+                <div class="icon-circle-eliminar"
+                    uib-tooltip="Eliminar propietario"
+                    ng-click="eliminar(p.id)">
+                    <i class="fa fa-trash"></i>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div ng-if="!propietarios.length" 
+         style="text-align: center; color: #9ca3af; padding: 40px;">
+      <i class="fa fa-inbox" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+      <p style="font-size: 16px; font-weight: 500; margin: 0;">No hay propietarios registrados.</p>
+    </div>
   </div>
 
-  <p class="text-muted" ng-if="!propietarios.length">
-    No hay propietarios registrados.
-  </p>
-
 </div>
 
-<div class="modal-footer">
-  <button class="btn btn-default" ng-click="cancelar()">Cerrar</button>
+<div class="modal-footer" style="background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 16px 24px;">
+  <button class="btn-categoria btn-categoria-default" ng-click="cancelar()">
+    <i class="fa fa-times"></i> Cerrar
+  </button>
+
+  <button class="btn-propietario btn-propietario-primary" ng-click="guardar()">
+    <i class="fa fa-save"></i> Guardar
+  </button>
 </div>
+
+<style>
+
+.btn-categoria {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-categoria-default {
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+/* Estilos para inputs del formulario de propietarios */
+.input-propietario {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  height: 40px;
+  line-height: 1.5;
+}
+
+.input-propietario:focus {
+  border-color: var(--primary-finance);
+  box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+  outline: none;
+}
+
+.input-propietario:hover {
+  border-color: #9ca3af;
+}
+
+/* Estado de edición */
+.input-editando {
+  border-color: var(--warning-finance) !important;
+  background-color: #fffbeb;
+}
+
+.input-editando:focus {
+  border-color: var(--warning-finance) !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Botones del modal de propietarios */
+.btn-propietario {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-propietario:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-propietario:active {
+  transform: translateY(0);
+}
+
+.btn-propietario-default {
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.btn-propietario-default:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-propietario-primary {
+  background: linear-gradient(135deg, var(--primary-finance), var(--secondary-finance));
+  color: white;
+}
+
+.btn-propietario-primary:hover {
+  background: linear-gradient(135deg, var(--secondary-finance), var(--primary-finance));
+}
+
+/* Hover para filas de la tabla */
+.fila-tabla-hover-prop {
+  transition: all 0.2s ease;
+}
+
+.fila-tabla-hover-prop:hover {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  box-shadow: 0 2px 8px rgba(26, 95, 122, 0.1);
+}
+
+.fila-tabla-hover-prop:hover td {
+  border-color: #bfdbfe !important;
+}
+
+/* Estilos para tabla */
+.table-bordered {
+  border: 1px solid #e5e7eb;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(249, 250, 251, 0.5);
+}
+
+.table-striped tbody tr:hover {
+  background-color: rgba(26, 95, 122, 0.05);
+  transition: background-color 0.2s ease;
+}
+
+/* Botón cerrar del header */
+.close:hover {
+  opacity: 1 !important;
+}
+</style>

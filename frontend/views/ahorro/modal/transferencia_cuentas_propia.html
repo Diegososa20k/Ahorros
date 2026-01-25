@@ -1,8 +1,11 @@
-<div class="modal-header">
-  <h4 class="modal-title">Transferencia entre cuentas propias</h4>
+<div class="modal-header" style="background: linear-gradient(135deg, var(--warning-finance) 0%, #ad851f 100%); border: none; padding: 20px 24px;">
+  <h3 class="modal-title" style="color: white; font-weight: 600; font-size: 20px; margin: 0; display: flex; align-items: center;">
+    <i class="fa fa-exchange" style="margin-right: 10px;"></i>
+    Transferencia entre cuentas propias
+  </h3>
 </div>
 
-<div class="modal-body">
+<div class="modal-body" style="padding: 24px; background: #fafafa;">
 
   <div class="row">
 
@@ -10,124 +13,146 @@
     <!-- COLUMNA ORIGEN -->
     <!-- ===================== -->
     <div class="col-md-6">
+      
+      <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid #ef4444; margin-bottom: 16px;">
+        <h4 style="margin: 0 0 20px 0; color: var(--dark-finance); font-weight: 600; font-size: 17px; display: flex; align-items: center;">
+          <i class="fa fa-arrow-circle-o-left" style="margin-right: 10px; color: #ef4444;"></i>
+          Cuenta de Origen
+        </h4>
 
-      <h4>Primera cuenta (Origen)</h4>
-
-      <div class="form-group">
-        <label>Propietario</label>
-        <select class="form-control"
-                ng-model="data.origen.propietario_id"
-                ng-options="p.id as p.nombre for p in propietarios">
-          <option value="">Seleccione</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Ubicación del dinero</label>
-
-        <select class="form-control"
-                ng-model="data.origen.ubicacion_id"
-                ng-options="u.id as u.nombre for u in ubicacionesOrigen">
-          <option value="">Seleccione</option>
-        </select>
-
-        <!-- Aquí mostramos el saldo -->
-        <div ng-if="saldoOrigenUbicacion !== undefined">
-          <small class="text-primary">
-            Saldo total en la ubicación: 
-            <strong>{{ saldoOrigenUbicacion | currency:'$' }}</strong>
-          </small>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Propietario
+          </label>
+          <select class="form-control input-transferencia"
+                  ng-model="data.origen.propietario_id"
+                  ng-options="p.id as p.nombre for p in propietarios">
+            <option value="">Seleccione un propietario</option>
+          </select>
         </div>
 
-      </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Ubicación del dinero
+          </label>
+          <select class="form-control input-transferencia"
+                  ng-model="data.origen.ubicacion_id"
+                  ng-options="u.id as u.nombre for u in ubicacionesOrigen">
+            <option value="">Seleccione una ubicación</option>
+          </select>
 
-
-      <div class="form-group">
-        <label>Cajita / Subcuenta</label>
-        <select class="form-control"
-                ng-model="data.origen.cajita"
-                ng-options="c for c in cajitasOrigen">
-          <option value="">Seleccione</option>
-        </select>
-
-        <!-- Mostrar saldo de la cajita origen -->
-        <div ng-if="data.origen.cajita && saldoOrigenCajita !== undefined">
-          <small class="text-success">
-            Saldo en esta cajita: 
-            <strong>{{ saldoOrigenCajita | currency:'$' }}</strong>
-          </small>
+          <div ng-if="saldoOrigenUbicacion !== undefined" style="margin-top: 8px; padding: 8px 12px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 6px; border-left: 3px solid var(--primary-finance);">
+            <small style="color: var(--primary-finance); font-weight: 600; font-size: 13px;">
+              <i class="fa fa-wallet" style="margin-right: 6px;"></i>
+              Saldo total en la ubicación: 
+              <strong>{{ saldoOrigenUbicacion | currency:'$' }}</strong>
+            </small>
+          </div>
         </div>
 
-      </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Cajita / Subcuenta
+          </label>
+          <select class="form-control input-transferencia"
+                  ng-model="data.origen.cajita"
+                  ng-options="c for c in cajitasOrigen">
+            <option value="">Seleccione una cajita</option>
+          </select>
 
+          <div ng-if="data.origen.cajita && saldoOrigenCajita !== undefined" style="margin-top: 8px; padding: 8px 12px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 6px; border-left: 3px solid var(--success-finance);">
+            <small style="color: var(--success-finance); font-weight: 600; font-size: 13px;">
+              <i class="fa fa-archive" style="margin-right: 6px;"></i>
+              Saldo en esta cajita: 
+              <strong>{{ saldoOrigenCajita | currency:'$' }}</strong>
+            </small>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Descripción</label>
-        <input class="form-control" ng-model="data.origen.descripcion">
-      </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Descripción
+          </label>
+          <input class="form-control input-transferencia" 
+                 ng-model="data.origen.descripcion"
+                 placeholder="Descripción del origen">
+        </div>
 
-      <div class="form-group">
-        <label>Cantidad a pasar</label>
-        <input class="form-control" type="number" ng-model="data.origen.cantidad">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Cantidad a transferir
+          </label>
+          <input class="form-control input-transferencia" 
+                 type="number" 
+                 step="0.01"
+                 ng-model="data.origen.cantidad"
+                 placeholder="Ej. 1500.00">
+        </div>
       </div>
 
     </div>
-
 
     <!-- ===================== -->
     <!-- COLUMNA DESTINO -->
     <!-- ===================== -->
     <div class="col-md-6">
 
-      <h4>Segunda cuenta (Destino)</h4>
+      <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid #10b981; margin-bottom: 16px;">
+        <h4 style="margin: 0 0 20px 0; color: var(--dark-finance); font-weight: 600; font-size: 17px; display: flex; align-items: center;">
+          <i class="fa fa-arrow-circle-o-right" style="margin-right: 10px; color: #10b981;"></i>
+          Cuenta de Destino
+        </h4>
 
-      <div class="form-group">
-        <label>Propietario</label>
-        <select class="form-control"
-                ng-model="data.destino.propietario_id"
-                ng-options="p.id as p.nombre for p in propietarios">
-          <option value="">Seleccione</option>
-        </select>
-      </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Propietario
+          </label>
+          <select class="form-control input-transferencia"
+                  ng-model="data.destino.propietario_id"
+                  ng-options="p.id as p.nombre for p in propietarios">
+            <option value="">Seleccione un propietario</option>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label>Ubicación del dinero</label>
-        <select class="form-control"
-                ng-model="data.destino.ubicacion_id"
-                ng-options="u.id as u.nombre for u in ubicacionesDestino">
-          <option value="">Seleccione</option>
-        </select>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Ubicación del dinero
+          </label>
+          <select class="form-control input-transferencia"
+                  ng-model="data.destino.ubicacion_id"
+                  ng-options="u.id as u.nombre for u in ubicacionesDestino">
+            <option value="">Seleccione una ubicación</option>
+          </select>
 
-        <!-- Saldo destino -->
-        <!-- Saldo total de ubicación destino -->
-        <div ng-if="data.destino.ubicacion_id && saldoDestinoUbicacion !== undefined">
-          <small class="text-info">
-            Saldo total en esta ubicación:
-            <strong>{{ saldoDestinoUbicacion | currency:'$' }}</strong>
-          </small>
+          <div ng-if="data.destino.ubicacion_id && saldoDestinoUbicacion !== undefined" style="margin-top: 8px; padding: 8px 12px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 6px; border-left: 3px solid var(--info-finance);">
+            <small style="color: var(--info-finance); font-weight: 600; font-size: 13px;">
+              <i class="fa fa-wallet" style="margin-right: 6px;"></i>
+              Saldo total en esta ubicación:
+              <strong>{{ saldoDestinoUbicacion | currency:'$' }}</strong>
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+            Cajita / Subcuenta
+          </label>
+          <select class="form-control input-transferencia"
+                  ng-model="data.destino.cajita"
+                  ng-options="c for c in cajitasDestino">
+            <option value="">Seleccione una cajita</option>
+          </select>
+
+          <div ng-if="data.destino.cajita && saldoDestinoCajita !== undefined" style="margin-top: 8px; padding: 8px 12px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 6px; border-left: 3px solid var(--success-finance);">
+            <small style="color: var(--success-finance); font-weight: 600; font-size: 13px;">
+              <i class="fa fa-archive" style="margin-right: 6px;"></i>
+              Saldo en esta cajita:
+              <strong>{{ saldoDestinoCajita | currency:'$' }}</strong>
+            </small>
+          </div>
         </div>
 
       </div>
-
-
-      <div class="form-group">
-        <label>Cajita / Subcuenta</label>
-        <select class="form-control"
-                ng-model="data.destino.cajita"
-                ng-options="c for c in cajitasDestino">
-            <option value="">Seleccione</option>
-        </select>
-
-          <!-- Saldo de la cajita destino -->
-        <div ng-if="data.destino.cajita && saldoDestinoCajita !== undefined">
-          <small class="text-success">
-            Saldo en esta cajita:
-            <strong>{{ saldoDestinoCajita | currency:'$' }}</strong>
-          </small>
-        </div>
-
-      </div>
-
 
     </div>
 
@@ -135,11 +160,101 @@
 
 </div>
 
-<div class="modal-footer">
-  <button class="btn btn-default" ng-click="cancelar()">Cancelar</button>
+<div class="modal-footer" style="background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 16px 24px;">
+  <button class="btn-transferencia btn-transferencia-default" ng-click="cancelar()">
+    <i class="fa fa-times"></i> Cancelar
+  </button>
 
-  <button class="btn btn-primary"
-          ng-click="transferir()">
-    Realizar transferencia
+  <button class="btn-transferencia btn-transferencia-primary" ng-click="transferir()">
+    <i class="fa fa-exchange"></i> Realizar transferencia
   </button>
 </div>
+
+<style>
+/* Estilos para inputs del formulario de transferencia */
+.input-transferencia {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  height: 40px;
+  line-height: 1.5;
+}
+
+.input-transferencia:focus {
+  border-color: var(--warning-finance);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  outline: none;
+}
+
+.input-transferencia:hover {
+  border-color: #9ca3af;
+}
+
+/* Fix para selects */
+select.input-transferencia {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 35px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Botones del modal de transferencia */
+.btn-transferencia {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-transferencia:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-transferencia:active {
+  transform: translateY(0);
+}
+
+.btn-transferencia-default {
+  background: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.btn-transferencia-default:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-transferencia-primary {
+  background: linear-gradient(135deg, var(--warning-finance), #fbbf24);
+  color: white;
+}
+
+.btn-transferencia-primary:hover {
+  background: linear-gradient(135deg, #fbbf24, var(--warning-finance));
+}
+
+.btn-transferencia-primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-transferencia-primary:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+</style>

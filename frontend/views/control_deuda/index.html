@@ -1,229 +1,474 @@
 <link rel="stylesheet" href="assets/css/estilos.css">
 
-
-<div class="page page-forms">
+<div class="page page-dashboard">
   <div class="pageheader">
     <h2><strong>Deudas</strong></h2>
   </div>
 
   <div class="pagecontent">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Registrar nuevas deudas</h3>
-      </div>
 
-      <div class="panel-body">
-        <form name="formDeuda" novalidate ng-submit="guardarDeuda()">
+    <!-- 📝 FORMULARIO DE REGISTRO -->
+    <div style="background: white; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid var(--danger-finance);">
+      <h3 style="margin: 0 0 20px 0; color: var(--dark-finance); font-weight: 600; font-size: 18px; display: flex; align-items: center;">
+        <i class="fa fa-credit-card" style="margin-right: 10px; color: var(--danger-finance);"></i>
+        Registrar nuevas deudas
+      </h3>
 
-          <div class="row">
-
-            <div class="col-md-4">
-              <label>Propietario de la deuda</label>
-              <select class="form-control"
-                      ng-model="deuda.propietario_id"
-                      ng-options="p.id as p.nombre for p in propietarios"
-                      required>
-                  <option value="">Seleccione un propietario</option>
-              </select>
-            </div>
-
-
-            <div class="col-md-4">
-              <label>Nombre de la deuda</label>
-              <input type="text" ng-model="deuda.nombre"
-                     class="form-control" placeholder="Ej. Tarjeta de crédito" required>
-            </div>
-
-            <div class="col-md-4">
-              <label>Descripción de la deuda</label>
-              <input type="text" ng-model="deuda.descripcion"
-                     class="form-control" placeholder="Ej. Mensualidad">
-            </div>
-
-            <div class="col-md-4">
-              <label>Cantidad total a pagar</label>
-              <input type="number" step="0.01" ng-model="deuda.cantidad_total"
-                     class="form-control" placeholder="Ej. 1500.00" required>
-            </div>
-
-            <div class="col-md-4">
-              <label>Cantidad de meses diferidos
-                <i class="fa fa-question-circle icon-help"
-                    tabindex="0"
-                    
-                    data-placement="right"
-                    uib-tooltip="Se refiere a la cantidad de meses en las que se pagara la deuda">
-                  </i>
-              </label>
-              <input type="number" ng-model="deuda.meses_diferidos"
-                     class="form-control" placeholder="Ej. 12" required>
-            </div>
-
-            <div class="col-md-4">
-              <label>Fecha límite de pago</label>
-              <input type="date" ng-model="deuda.fecha_limite"
-                     class="form-control" required>
-            </div>
-
+      <form name="formDeuda" novalidate ng-submit="guardarDeuda()">
+        <div class="row">
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Propietario de la deuda
+            </label>
+            <select class="form-control input-deuda"
+                    ng-model="deuda.propietario_id"
+                    ng-options="p.id as p.nombre for p in propietarios"
+                    required>
+              <option value="">Seleccione un propietario</option>
+            </select>
           </div>
 
-          
-          <div style="text-align: right; margin-top: 20px;" >
-            <button type="submit" class="btn btn-success" ng-disabled="formDeuda.$invalid">
-                Guardar
-            </button>
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Nombre de la deuda
+            </label>
+            <input type="text" ng-model="deuda.nombre" class="form-control input-deuda" 
+                   placeholder="Ej. Tarjeta de crédito" required>
           </div>
 
-        </form>
-      </div>
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Descripción de la deuda
+            </label>
+            <input type="text" ng-model="deuda.descripcion" class="form-control input-deuda" 
+                   placeholder="Ej. Mensualidad">
+          </div>
+        </div>
 
-      
-    </div>
+        <div class="row" style="margin-top: 16px;">
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Cantidad total a pagar
+            </label>
+            <input type="number" step="0.01" ng-model="deuda.cantidad_total" 
+                   class="form-control input-deuda" placeholder="Ej. 1500.00" required>
+          </div>
 
-    <div>
-      <div class="table-responsive">
-        <div style="text-align:right; margin-bottom:10px;">
-          <button class="btn btn-warning btn-sm" ng-click="limpiarFiltros()">
-            <i class="fa fa-eraser"></i> Limpiar filtros
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Cantidad de meses diferidos
+              <i class="fa fa-question-circle icon-help"
+                tabindex="0"
+                data-placement="right"
+                uib-tooltip="Se refiere a la cantidad de meses en las que se pagara la deuda">
+              </i>
+            </label>
+            <input type="number" ng-model="deuda.meses_diferidos" class="form-control input-deuda" 
+                   placeholder="Ej. 12" required>
+          </div>
+
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Fecha límite de pago
+            </label>
+            <input type="date" ng-model="deuda.fecha_limite" class="form-control input-deuda" required>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; text-align: right;">
+          <button type="submit" class="btn-deuda btn-deuda-success" ng-disabled="formDeuda.$invalid">
+            <i class="fa fa-save"></i> Guardar
           </button>
         </div>
-          <table class="table table-bordered table-striped">
-              <thead style="background:#f7f7f7;">
-                <tr>
-                    <th>Propietario</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Cantidad mensual</th>
-                    <th>Abono</th>
-                    <th>Pago final</th>
-                    <th>Mes</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                </tr>
+      </form>
+    </div>
 
-                <!-- FILA DE FILTROS -->
-                <tr>
-                    <th>
-                        <input type="text" class="form-control input-sm"
-                              placeholder="Buscar propietario..."
-                              ng-model="filtroDeuda.propietario">
-                    </th>
-                    <th>
-                        <input type="text" class="form-control input-sm"
-                              placeholder="Buscar nombre..."
-                              ng-model="filtroDeuda.nombre">
-                    </th>
-                    <th>
-                        <input type="text" class="form-control input-sm"
-                              placeholder="Buscar descripción..."
-                              ng-model="filtroDeuda.descripcion">
-                    </th>
-
-                    <!-- columnas sin filtro -->
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    
-                </tr>
-            </thead>
-
-
-              <tbody>
-
-                <!-- Encabezado clickable (acordeón) -->
-                <tr ng-repeat-start="d in (deudas | filter:filtrarDeudas)"
-                    ng-click="d._abierto = !d._abierto"
-                    style="cursor:pointer;">
-
-                    
-                    
-                    <td colspan="9" style="
-                        background:#e9ecef;
-                        font-weight:bold;
-                        font-size:15px;
-                        padding:10px;">
-                        <span>
-                          <b ng-if="!d._abierto">▶</b>
-                          <b ng-if="d._abierto">▼</b>
-
-                          <!-- ICONOS DEPENDIENDO DEL COLOR -->
-                          <span ng-if="tieneRojo(d)" style="color: red; font-weight: bold; margin-right:5px;">
-                              ⚠️ Urgente
-                          </span>
-
-                          <span ng-if="!tieneRojo(d) && tieneNaranja(d)" style="color: orange; font-weight: bold; margin-right:5px;">
-                              ⚠️ Advertencia
-                          </span>
-
-                          Propietario de la deuda: {{ d.control_mensualidad[0].propietario_nombre }}
-                          — Nombre de la deuda: {{ d.nombre }}
-                          — Pago a mes(es): {{ d.control_mensualidad[0].cantidad }}
-                        </span>
-
-                    </td>
-                </tr>
-
-                <!-- Mensualidades SOLO si está abierto -->
-                <tr ng-repeat="m in d.control_mensualidad"
-                    ng-if="d._abierto"
-                    ng-repeat-end
-                    ng-class="{
-                            'fila-pagada': m.pagado_mensualidades,
-                            'fila-naranja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 10 && diasRestantes(m.fecha_pago) > 5,
-                            'fila-roja': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 5 }">
-                    <td>{{ m.propietario_nombre }}</td>
-                    <td>{{ d.nombre }}</td>
-                    <td>{{ d.descripcion }}</td>
-
-                    <td>${{ m.cantidad | number:2 }}</td>
-
-                    <td>${{ m.abono || 0 | number:2 }}</td>
-
-                    <td>${{ (m.cantidad - (m.abono || 0)) | number:2 }}</td>
-
-                    <td>{{ m.mensualidad }}</td>
-                    <td>{{ m.fecha_pago }}</td>
-
-                    <td class="cell-center-multi">
-                      <div class="icon-row">
-
-                        <!-- Ícono dinámico -->
-                        <div ng-click="m.pagado_mensualidades = !m.pagado_mensualidades; marcarMensualidadPagada(d, m)"
-                            
-                            uib-tooltip="{{ m.pagado_mensualidades ? 'Mensualidad pagada' : 'Mensualidad no pagada' }}"
-                            ng-class="m.pagado_mensualidades ? 'icon-circle-pagado' : 'icon-circle-no-pagado'">
-                            
-                            <i class="fa" ng-class="m.pagado_mensualidades ? 'fa-check' : 'fa-exclamation'"></i>
-                        </div>
-
-                        <div class="icon-circle-eliminar"
-                            
-                            uib-tooltip="Eliminar deuda"
-                            ng-if="$last && d.pagado"
-                            ng-click="eliminarDeuda(d.id)">
-                            <i class="fa fa-trash"></i>
-                        </div>
-
-                        <div class="icon-circle-abono"
-                        
-                            uib-tooltip="Registrar abono"
-                            ng-click="abrirModalAbono(d, m)">
-                            <i class="fa fa-money"></i>
-                        </div>
-
-                      </div>
-                    </td>
-
-
-
-                </tr>
-
-              </tbody>
-
-          </table>
+    <!-- 💵 TOTAL SELECCIONADO DE DEUDAS -->
+    <div ng-if="totalDeudaSeleccionado > 0" style="background: linear-gradient(135deg, #ef476f 0%, #ff6b9d 100%); padding: 16px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(239, 71, 111, 0.3);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+          <i class="fa fa-check-square" style="color: white; font-size: 28px; margin-right: 16px;"></i>
+          <div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+              Total deuda seleccionada
+            </div>
+            <div style="font-size: 24px; font-weight: 700; color: white; margin-top: 2px;">
+              ${{ totalDeudaSeleccionado | number:2 }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- 📊 TABLA DE DEUDAS -->
+    <div class="movements-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <h3 class="chart-title" style="margin: 0;">
+          <i class="fa fa-list-alt" style="margin-right: 8px; color: var(--primary-finance);"></i>
+          Deudas registradas
+        </h3>
+
+        <button class="btn btn-warning btn-sm" ng-click="limpiarFiltros()"
+                style="border-radius: 8px; padding: 8px 16px; font-weight: 600; transition: all 0.3s ease; border: none;">
+          <i class="fa fa-eraser"></i> Limpiar filtros
+        </button>
+      </div>
+
+      <div class="table-responsive" style="overflow-x: auto; overflow-y: hidden;">
+        <table class="table table-bordered table-striped" style="margin-bottom: 0;">
+          <thead>
+            <tr style="background: linear-gradient(135deg, var(--primary-finance), var(--secondary-finance)); color: white;">
+              <th style="border: none; width: 40px;"><i class="fa fa-check-square-o"></i></th>
+              <th style="border: none;"><i class="fa fa-user"></i> Propietario</th>
+              <th style="border: none;"><i class="fa fa-tag"></i> Nombre</th>
+              <th style="border: none;"><i class="fa fa-file-text"></i> Descripción</th>
+              <th style="border: none;"><i class="fa fa-dollar"></i> Cantidad mensual</th>
+              <th style="border: none;"><i class="fa fa-money"></i> Abono</th>
+              <th style="border: none;"><i class="fa fa-calculator"></i> Pago final</th>
+              <th style="border: none;"><i class="fa fa-calendar-o"></i> Mes</th>
+              <th style="border: none;"><i class="fa fa-calendar"></i> Fecha</th>
+              <th style="border: none;"><i class="fa fa-cog"></i> Acciones</th>
+            </tr>
+
+            <!-- FILA DE FILTROS -->
+            <tr style="background: #f9fafb;">
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;">
+                <input type="text" class="form-control input-sm" placeholder="Buscar propietario..." 
+                       ng-model="filtroDeuda.propietario">
+              </th>
+              <th style="border: 1px solid #e5e7eb;">
+                <input type="text" class="form-control input-sm" placeholder="Buscar nombre..." 
+                       ng-model="filtroDeuda.nombre">
+              </th>
+              <th style="border: 1px solid #e5e7eb;">
+                <input type="text" class="form-control input-sm" placeholder="Buscar descripción..." 
+                       ng-model="filtroDeuda.descripcion">
+              </th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Encabezado clickable (acordeón) -->
+            <tr ng-repeat-start="d in (deudas | filter:filtrarDeudas)"
+                class="fila-acordeon">
+              <td colspan="10" style="padding: 12px; font-weight: 600; font-size: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <!-- Checkbox del padre (deuda completa) -->
+                  <input type="checkbox" ng-model="d.checked" ng-change="togglePadreDeuda(d)"
+                         class="checkbox-deuda-padre">
+
+                  <span ng-click="d._abierto = !d._abierto" style="cursor: pointer; display: flex; align-items: center; gap: 10px; flex: 1;">
+                    <i class="fa" ng-class="d._abierto ? 'fa-chevron-down' : 'fa-chevron-right'" 
+                       style="color: var(--primary-finance); font-size: 12px;"></i>
+
+                    <!-- ICONOS DEPENDIENDO DEL COLOR -->
+                    <span ng-if="tieneRojo(d)" style="display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                      <i class="fa fa-exclamation-triangle"></i>
+                      Urgente
+                    </span>
+
+                    <span ng-if="!tieneRojo(d) && tieneNaranja(d)" style="display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                      <i class="fa fa-exclamation-circle"></i>
+                      Advertencia
+                    </span>
+
+                    <span style="color: var(--dark-finance);">
+                      Propietario: <strong>{{ d.control_mensualidad[0].propietario_nombre }}</strong>
+                      — Deuda: <strong>{{ d.nombre }}</strong>
+                      — Pago: <strong>${{ d.control_mensualidad[0].cantidad | number:2 }}</strong>/mes
+                    </span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Mensualidades SOLO si está abierto -->
+            <tr ng-repeat="m in d.control_mensualidad"
+                ng-if="d._abierto"
+                ng-repeat-end
+                ng-class="{
+                  'fila-pagada-deuda': m.pagado_mensualidades,
+                  'fila-naranja-deuda': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 10 && diasRestantes(m.fecha_pago) > 5,
+                  'fila-roja-deuda': !m.pagado_mensualidades && diasRestantes(m.fecha_pago) <= 5
+                }"
+                class="fila-tabla-hover">
+              <td style="width: 40px;">
+                <input type="checkbox" ng-model="m.checked" ng-change="toggleHijoDeuda(d)"
+                       class="checkbox-deuda-hijo">
+              </td>
+              <td>{{ m.propietario_nombre }}</td>
+              <td>{{ d.nombre }}</td>
+              <td>{{ d.descripcion }}</td>
+              <td style="font-weight: 600;">${{ m.cantidad | number:2 }}</td>
+              <td style="font-weight: 600; color: var(--info-finance);">${{ m.abono || 0 | number:2 }}</td>
+              <td style="font-weight: 600; color: var(--danger-finance);">${{ (m.cantidad - (m.abono || 0)) | number:2 }}</td>
+              <td>{{ m.mensualidad }}</td>
+              <td>{{ m.fecha_pago }}</td>
+              <td class="cell-center-multi">
+                <div class="icon-row">
+                  <!-- Ícono dinámico -->
+                  <div ng-click="m.pagado_mensualidades = !m.pagado_mensualidades; marcarMensualidadPagada(d, m)"
+                       uib-tooltip="{{ m.pagado_mensualidades ? 'Mensualidad pagada' : 'Mensualidad no pagada' }}"
+                       ng-class="m.pagado_mensualidades ? 'icon-circle-pagado' : 'icon-circle-no-pagado'">
+                    <i class="fa" ng-class="m.pagado_mensualidades ? 'fa-check' : 'fa-exclamation'"></i>
+                  </div>
+
+                  <div class="icon-circle-eliminar"
+                       uib-tooltip="Eliminar deuda"
+                       ng-if="$last && d.pagado"
+                       ng-click="eliminarDeuda(d.id)">
+                    <i class="fa fa-trash"></i>
+                  </div>
+
+                  <div class="icon-circle-abono"
+                       uib-tooltip="Registrar abono"
+                       ng-click="abrirModalAbono(d, m)">
+                    <i class="fa fa-money"></i>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
+
+<style>
+/* Estilos para inputs del formulario */
+.input-deuda {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  height: 40px;
+  line-height: 1.5;
+}
+
+.input-deuda:focus {
+  border-color: var(--primary-finance);
+  box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+  outline: none;
+}
+
+.input-deuda:hover {
+  border-color: #9ca3af;
+}
+
+/* Fix para selects */
+select.input-deuda {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 35px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Checkboxes para deudas - padre */
+.checkbox-deuda-padre {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  border: 2.5px solid #d1d5db;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none !important;
+}
+
+.checkbox-deuda-padre:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(239, 71, 111, 0.2);
+}
+
+.checkbox-deuda-padre:hover {
+  border-color: var(--danger-finance);
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.checkbox-deuda-padre:checked {
+  background-color: var(--danger-finance);
+  border-color: var(--danger-finance);
+}
+
+.checkbox-deuda-padre:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Checkboxes para deudas - hijo (mensualidades) */
+.checkbox-deuda-hijo {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  border: 2.5px solid #d1d5db;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  outline: none !important;
+}
+
+.checkbox-deuda-hijo:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(239, 71, 111, 0.15);
+}
+
+.checkbox-deuda-hijo:hover {
+  border-color: var(--danger-finance);
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.checkbox-deuda-hijo:checked {
+  background-color: var(--danger-finance);
+  border-color: var(--danger-finance);
+}
+
+.checkbox-deuda-hijo:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Colores mejorados para las filas de mensualidades */
+.fila-pagada-deuda {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+  border-left: 4px solid #10b981 !important;
+}
+
+.fila-naranja-deuda {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+  border-left: 4px solid #f59e0b !important;
+}
+
+.fila-roja-deuda {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+  border-left: 4px solid #ef4444 !important;
+}
+
+/* Botones del formulario */
+.btn-deuda {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-deuda:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-deuda:active {
+  transform: translateY(0);
+}
+
+.btn-deuda-success {
+  background: linear-gradient(135deg, var(--success-finance), #3dd98b);
+  color: white;
+}
+
+.btn-deuda-success:hover {
+  background: linear-gradient(135deg, #3dd98b, var(--success-finance));
+}
+
+.btn-deuda-success:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-deuda-success:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Fila acordeón */
+.fila-acordeon {
+  cursor: pointer;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  transition: all 0.2s ease;
+}
+
+.fila-acordeon:hover {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  box-shadow: 0 2px 8px rgba(26, 95, 122, 0.1);
+}
+
+/* Hover para filas de la tabla */
+.fila-tabla-hover {
+  transition: all 0.2s ease;
+}
+
+.fila-tabla-hover:hover {
+  box-shadow: 0 2px 8px rgba(26, 95, 122, 0.1);
+}
+
+.fila-tabla-hover:hover td {
+  border-color: #bfdbfe !important;
+}
+
+/* Estilos para tabla */
+.table-bordered {
+  border: 1px solid #e5e7eb;
+}
+
+.table-bordered thead th {
+  border-bottom: none !important;
+  padding: 14px 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.table-bordered tbody td {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(249, 250, 251, 0.5);
+}
+</style>

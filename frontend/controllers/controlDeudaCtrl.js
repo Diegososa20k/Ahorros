@@ -231,6 +231,73 @@ angular.module('ahorrosApp')
     };
 
 
+    // Después de cargar las deudas, agregar estas variables y funciones:
+
+// Variable para el total seleccionado
+$scope.totalDeudaSeleccionado = 0;
+
+// Toggle padre (seleccionar/deseleccionar toda la deuda)
+$scope.togglePadreDeuda = function(deuda) {
+  if (!deuda || !deuda.control_mensualidad) return;
+  
+  // Marcar/desmarcar todas las mensualidades
+  deuda.control_mensualidad.forEach(m => {
+    m.checked = !!deuda.checked;
+  });
+  
+  $scope.recalcularSeleccionDeuda();
+};
+
+// Toggle hijo (marcar mensualidad individual)
+$scope.toggleHijoDeuda = function(deuda) {
+  if (!deuda || !deuda.control_mensualidad) return;
+  
+  // Si todas las mensualidades están marcadas, marcar el padre
+  deuda.checked = deuda.control_mensualidad.every(m => m.checked);
+  
+  $scope.recalcularSeleccionDeuda();
+};
+
+// Recalcular suma total de deudas seleccionadas
+$scope.recalcularSeleccionDeuda = function() {
+  let total = 0;
+  
+  ($scope.deudas || []).forEach(deuda => {
+    if (deuda.control_mensualidad) {
+      deuda.control_mensualidad.forEach(m => {
+        if (m.checked) {
+          // Sumar el pago final (cantidad - abono)
+          const pagoFinal = (m.cantidad || 0) - (m.abono || 0);
+          total += parseFloat(pagoFinal) || 0;
+        }
+      });
+    }
+  });
+  
+  $scope.totalDeudaSeleccionado = parseFloat(total.toFixed(2));
+};
+
+// Modificar la función cargarDeudas para inicializar los checkboxes
+$scope.cargarDeudas = function() {
+  controlDeudaFactory.query().$promise.then(function(response) {
+    $scope.deudas = response;
+    
+    // Inicializar acordeón cerrado y checkboxes en false
+    $scope.deudas.forEach(d => {
+      d._abierto = false;
+      d.checked = false;
+      
+      if (d.control_mensualidad) {
+        d.control_mensualidad.forEach(m => {
+          m.checked = false;
+        });
+      }
+    });
+    
+    $scope.recalcularSeleccionDeuda();
+  });
+};
+
 
 })
 

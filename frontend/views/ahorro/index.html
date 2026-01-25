@@ -1,363 +1,640 @@
 <link rel="stylesheet" href="assets/css/estilos.css">
 
-<div class="page page-forms">
+<div class="page page-dashboard">
   <div class="pageheader">
     <h2><strong>Ahorros</strong></h2>
   </div>
 
   <div class="pagecontent">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Registrar nuevo ahorro</h3>
-      </div>
-      <div class="panel-body">
-        <form name="formAhorro" novalidate ng-submit="guardarAhorro()">
 
-          <div class="row">
-            <div class="col-md-4">
-              <label>Cantidad</label>
-              <input type="number" step="0.01" ng-model="nuevoAhorro.cantidad_ahorro"
-                     class="form-control" placeholder="Ej. 1500.00" required />
-            </div>
+    <!-- 💰 FORMULARIO DE REGISTRO -->
+    <div style="background: white; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-top: 4px solid var(--primary-finance);">
+      <h3 style="margin: 0 0 20px 0; color: var(--dark-finance); font-weight: 600; font-size: 18px; display: flex; align-items: center;">
+        <i class="fa fa-plus-circle" style="margin-right: 10px; color: var(--primary-finance);"></i>
+        Registrar nuevo ahorro
+      </h3>
 
-            <div class="col-md-4">
-              <label>Fecha del ahorro</label>
-              <input type="date" ng-model="nuevoAhorro.fecha_ahorro"
-                     class="form-control" required />
-            </div>
-
-            <div class="col-md-4">
-              <label>Descripción</label>
-              <input type="text" ng-model="nuevoAhorro.descripcion"
-                     class="form-control" placeholder="Opcional" />
-            </div>
+      <form name="formAhorro" novalidate ng-submit="guardarAhorro()">
+        <div class="row">
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Cantidad
+            </label>
+            <input type="number" step="0.01" ng-model="nuevoAhorro.cantidad_ahorro"
+                   class="form-control input-ahorro" placeholder="Ej. 1500.00" required />
           </div>
 
-          <div class="row m-t-sm">
-            <div class="col-md-4">
-              <label>Propietario</label>
-                <select ng-model="nuevoAhorro.propietario_id"
-                  ng-options="p.propietario_id as p.propietario_unico.nombre for p in propietarios"
-                  class="form-control" required>
-                  <option value="">-- Selecciona propietario --</option>
-                </select>
-            </div>
-
-            <div class="col-md-4">
-              <label>Ubicación del dinero</label>
-              <select ng-model="nuevoAhorro.ubicacion_id"
-                      ng-options="u.id as u.nombre for u in ubicacionesFiltradas"
-                      class="form-control" required>
-                <option value="">-- Selecciona ubicación --</option>
-              </select>
-            </div>
-
-            <div class="col-md-4" ng-if="mostrarCajitas">
-              <label>Cajita / Subcuenta</label>
-              <select ng-model="nuevoAhorro.cajita_subcuenta"
-                      ng-options="c for c in cajitasPropietario"
-                      class="form-control">
-                <option value="">-- Selecciona cajita o subcuenta --</option>
-              </select>
-            </div>
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Fecha del ahorro
+            </label>
+            <input type="date" ng-model="nuevoAhorro.fecha_ahorro"
+                   class="form-control input-ahorro" required />
           </div>
 
-          <div class="row m-t-md" style="margin-top: 30px;">
-            <div class="col-md-12 text-right">
-                <button class="btn btn-warning"
-                        ng-click="abrirModalTransferencia()"
-                        uib-tooltip="Transferencia entre cuentas propias">
-                  <i class="fa fa-retweet"></i> Transferencia
-                </button>
-
-
-                <button class="btn btn-warning" ng-click="abrirModalGasto()">
-                  <i class="fa fa-minus-circle"></i> Realizar gasto
-                </button>
-
-                <button type="submit" class="btn btn-success"
-                        ng-disabled="formAhorro.$invalid">
-                  <i class="fa fa-save"></i> Guardar ahorro
-                </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- 🔷 TOTAL SELECCIONADO (afuera de los cards) -->
-    <div class="alert alert-info" ng-if="totalSeleccionado > 0">
-      <strong>Total seleccionado:</strong> {{ totalSeleccionado | currency }}
-    </div>
-
-    <!-- 🔷 ACCORDION GENERAL -->
-    <div class="panel-group" id="accordionAhorros">
-
-      <!-- CARD PADRE (UBICACIÓN) -->
-      <div class="panel panel-info" ng-repeat="ubic in ubicacionesConAhorros track by ubic.id">
-
-        <div class="panel-heading" role="tab" id="headingU{{ubic.id}}">
-          <div class="row" style="display:flex; align-items:center;">
-            
-            <!-- Checkbox del padre -->
-            <div class="col-xs-1">
-              <input type="checkbox" ng-model="ubic.checked" ng-change="togglePadre(ubic)">
-            </div>
-
-            <!-- Nombre de ubicación -->
-            <div class="col-xs-7">
-              <h4 class="panel-title" style="margin:0;">
-                <a role="button" data-toggle="collapse" 
-                  href="#collapseU{{ubic.id}}">
-
-                  <i class="fa fa-map-marker"></i> {{ ubic.nombre }}
-                  <br>
-                  <small><i class="fa fa-user"></i> {{ ubic.propietario }}</small>
-                </a>
-              </h4>
-            </div>
-
-            <!-- Total -->
-            <div class="col-xs-4 text-right">
-              <strong>{{ ubic.total | currency }}</strong>
-            </div>
-
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Descripción
+            </label>
+            <input type="text" ng-model="nuevoAhorro.descripcion"
+                   class="form-control input-ahorro" placeholder="Opcional" />
           </div>
         </div>
 
-        <!-- 🔹 CONTENIDO COLAPSABLE -->
-        <div id="collapseU{{ubic.id}}" class="panel-collapse collapse">
-          <div class="panel-body">
+        <div class="row" style="margin-top: 16px;">
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Propietario
+            </label>
+            <select ng-model="nuevoAhorro.propietario_id"
+                    ng-options="p.propietario_id as p.propietario_unico.nombre for p in propietarios"
+                    class="form-control input-ahorro" required>
+              <option value="">-- Selecciona propietario --</option>
+            </select>
+          </div>
 
-            <!-- HIJOS: CAJITAS / SUBCUENTAS -->
-            <div class="panel panel-default" ng-repeat="caja in ubic.cajitas track by caja.nombre">
-              <div class="panel-heading">
-                <div class="row" style="display:flex; align-items:center;">
+          <div class="col-md-4">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Ubicación del dinero
+            </label>
+            <select ng-model="nuevoAhorro.ubicacion_id"
+                    ng-options="u.id as u.nombre for u in ubicacionesFiltradas"
+                    class="form-control input-ahorro" required>
+              <option value="">-- Selecciona ubicación --</option>
+            </select>
+          </div>
 
-                  <div class="col-xs-1">
-                    <input type="checkbox" ng-model="caja.checked" ng-change="toggleHijo(ubic)">
+          <div class="col-md-4" ng-if="mostrarCajitas">
+            <label style="font-weight: 500; color: #374151; margin-bottom: 6px; display: block; font-size: 14px;">
+              Cajita / Subcuenta
+            </label>
+            <select ng-model="nuevoAhorro.cajita_subcuenta"
+                    ng-options="c for c in cajitasPropietario"
+                    class="form-control input-ahorro">
+              <option value="">-- Selecciona cajita o subcuenta --</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top: 24px;">
+          <div class="col-md-12 text-right">
+            <button type="button" class="btn-ahorro btn-ahorro-warning" ng-click="abrirModalTransferencia()" 
+                    uib-tooltip="Transferencia entre cuentas propias">
+              <i class="fa fa-retweet"></i> Transferencia
+            </button>
+
+            <button type="button" class="btn-ahorro btn-ahorro-warning" ng-click="abrirModalGasto()">
+              <i class="fa fa-minus-circle"></i> Realizar gasto
+            </button>
+
+            <button type="submit" class="btn-ahorro btn-ahorro-success" ng-disabled="formAhorro.$invalid">
+              <i class="fa fa-save"></i> Guardar ahorro
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- 💵 TOTAL SELECCIONADO -->
+    <div ng-if="totalSeleccionado > 0" style="background: linear-gradient(135deg, #06d6a0 0%, #159895 100%); padding: 16px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(6, 214, 160, 0.3);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+          <i class="fa fa-check-square" style="color: white; font-size: 28px; margin-right: 16px;"></i>
+          <div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+              Total seleccionado
+            </div>
+            <div style="font-size: 24px; font-weight: 700; color: white; margin-top: 2px;">
+              {{ totalSeleccionado | currency }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📦 ACCORDION DE UBICACIONES -->
+    <div class="movements-panel" style="margin-bottom: 24px;">
+      <h3 class="chart-title" style="margin-bottom: 20px;">
+        <i class="fa fa-folder-open" style="margin-right: 8px; color: var(--primary-finance);"></i>
+        Ahorros por ubicación
+      </h3>
+
+      <div class="panel-group" id="accordionAhorros">
+        <!-- CARD PADRE (UBICACIÓN) -->
+        <div ng-repeat="ubic in ubicacionesConAhorros track by ubic.id" 
+             style="background: linear-gradient(135deg, var(--primary-finance) 0%, var(--secondary-finance) 100%); border-radius: 8px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(26, 95, 122, 0.2);">
+          
+          <div style="padding: 14px 16px; cursor: pointer;">
+            <div class="row" style="display: flex; align-items: center;">
+              
+              <!-- Checkbox del padre -->
+              <div class="col-xs-1" style="display: flex; align-items: center; justify-content: center;">
+                <input type="checkbox" ng-model="ubic.checked" ng-change="togglePadre(ubic)" 
+                       class="checkbox-ahorro">
+              </div>
+
+              <!-- Nombre de ubicación -->
+              <div class="col-xs-7">
+                <a role="button" data-toggle="collapse" href="#collapseU{{ubic.id}}" 
+                   style="text-decoration: none; display: block; color: white;">
+                  <div style="font-size: 15px; font-weight: 600; margin-bottom: 2px;">
+                    <i class="fa fa-map-marker" style="margin-right: 8px;"></i>
+                    {{ ubic.nombre }}
+                  </div>
+                  <div style="font-size: 12px; opacity: 0.9;">
+                    <i class="fa fa-user" style="margin-right: 6px;"></i>
+                    {{ ubic.propietario }}
+                  </div>
+                </a>
+              </div>
+
+              <!-- Total -->
+              <div class="col-xs-4 text-right">
+                <div style="font-size: 20px; font-weight: 700; color: white;">
+                  {{ ubic.total | currency }}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- CONTENIDO COLAPSABLE -->
+          <div id="collapseU{{ubic.id}}" class="panel-collapse collapse">
+            <div style="padding: 12px 16px; background: rgba(255,255,255,0.95);">
+
+              <!-- HIJOS: CAJITAS / SUBCUENTAS -->
+              <div ng-repeat="caja in ubic.cajitas track by caja.nombre" 
+                   style="background: white; border-radius: 6px; padding: 10px 12px; margin-bottom: 6px; border-left: 3px solid var(--secondary-finance); transition: all 0.2s ease;"
+                   class="card-hijo-hover">
+                <div class="row" style="display: flex; align-items: center;">
+
+                  <div class="col-xs-1" style="display: flex; align-items: center; justify-content: center;">
+                    <input type="checkbox" ng-model="caja.checked" ng-change="toggleHijo(ubic)"
+                           class="checkbox-ahorro-hijo">
                   </div>
 
                   <div class="col-xs-7">
-                    <strong><i class="fa fa-archive"></i> {{ caja.nombre }}</strong>
-                      <span class="text-muted"> ({{ caja.count }} entradas)</span>
+                    <div style="font-weight: 600; color: var(--dark-finance); font-size: 14px;">
+                      <i class="fa fa-archive" style="margin-right: 8px; color: var(--secondary-finance);"></i>
+                      {{ caja.nombre }}
+                      <span style="color: #9ca3af; font-weight: 400; margin-left: 6px; font-size: 12px;">
+                        ({{ caja.count }} entradas)
+                      </span>
+                    </div>
                   </div>
 
                   <div class="col-xs-4 text-right">
-                    <strong>{{ caja.total | currency }}</strong>
+                    <div style="font-size: 16px; font-weight: 700; color: var(--success-finance);">
+                      {{ caja.total | currency }}
+                    </div>
                   </div>
 
                 </div>
               </div>
-            </div>
 
-            <!-- Cuando no existan cajitas -->
-            <div ng-if="ubic.cajitas.length === 0" class="text-muted">
-              No hay cajitas/subcuentas para esta ubicación.
-            </div>
+              <!-- Cuando no existan cajitas -->
+              <div ng-if="ubic.cajitas.length === 0" 
+                   style="text-align: center; color: #9ca3af; padding: 16px; font-style: italic; font-size: 13px;">
+                <i class="fa fa-inbox" style="font-size: 20px; margin-bottom: 6px; display: block;"></i>
+                No hay cajitas/subcuentas para esta ubicación.
+              </div>
 
+            </div>
           </div>
         </div>
+
+      </div>
+
+      <!-- Si no existen ubicaciones -->
+      <div ng-if="(!ubicacionesConAhorros || ubicacionesConAhorros.length === 0)" 
+           style="text-align: center; color: #9ca3af; padding: 40px;">
+        <i class="fa fa-folder-open-o" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+        <p style="font-size: 16px; font-weight: 500;">No hay ubicaciones con ahorros registrados.</p>
       </div>
 
     </div>
 
-    <!-- Si no existen ubicaciones -->
-    <div class="text-center text-muted" 
-        ng-if="(!ubicacionesConAhorros || ubicacionesConAhorros.length === 0)">
-      No hay ubicaciones con ahorros registrados.
+    <!-- 📊 TABS / PESTAÑAS -->
+    <div style="margin-bottom: 24px;">
+      <div style="display: flex; gap: 8px; border-bottom: 2px solid #e5e7eb;">
+        <button ng-click="pestanaActiva = 'ahorros'" 
+                ng-class="{'active-tab': pestanaActiva === 'ahorros'}"
+                style="padding: 12px 24px; border: none; background: transparent; font-weight: 600; font-size: 15px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; color: #6b7280;">
+          <i class="fa fa-piggy-bank" style="margin-right: 8px;"></i>
+          Ahorros
+        </button>
+
+        <button ng-click="pestanaActiva = 'gastos'" 
+                ng-class="{'active-tab': pestanaActiva === 'gastos'}"
+                style="padding: 12px 24px; border: none; background: transparent; font-weight: 600; font-size: 15px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; color: #6b7280;">
+          <i class="fa fa-money" style="margin-right: 8px;"></i>
+          Gastos
+        </button>
+      </div>
     </div>
 
+    <!-- 📋 TABLA DE REGISTROS -->
+    <div class="movements-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <h3 class="chart-title" style="margin: 0;">
+          <i class="fa" ng-class="{'fa-history': pestanaActiva === 'ahorros', 'fa-shopping-cart': pestanaActiva === 'gastos'}" 
+             style="margin-right: 8px; color: var(--primary-finance);"></i>
+          <span ng-if="pestanaActiva === 'ahorros'">Ahorros registrados</span>
+          <span ng-if="pestanaActiva === 'gastos'">Gastos registrados</span>
+        </h3>
 
-    <!-- 🔷 TABS / PESTAÑAS -->
-    <ul class="nav nav-tabs m-t-md">
-      <li ng-class="{active: pestanaActiva === 'ahorros'}">
-        <a href="" ng-click="pestanaActiva = 'ahorros'">
-          <i class="fa fa-piggy-bank"></i> Ahorros
-        </a>
-      </li>
-
-      <li ng-class="{active: pestanaActiva === 'gastos'}">
-        <a href="" ng-click="pestanaActiva = 'gastos'">
-          <i class="fa fa-money"></i> Gastos
-        </a>
-      </li>
-    </ul>
-
-
-    <!-- Tabla de registros -->
-    <div class="panel panel-default m-t-md">
-      <div class="panel-heading">
-        <h3 class="panel-title" ng-if="pestanaActiva === 'ahorros'">Ahorros registrados</h3>
-        <h3 class="panel-title" ng-if="pestanaActiva === 'gastos'">Gastos registrados</h3>
+        <button class="btn btn-warning btn-sm" ng-click="limpiarFiltros()"
+                style="border-radius: 8px; padding: 8px 16px; font-weight: 600; transition: all 0.3s ease; border: none;">
+          <i class="fa fa-eraser"></i> Limpiar filtros
+        </button>
       </div>
 
-      <div class="panel-body">
+      <div class="table-responsive" style="overflow-x: auto; overflow-y: hidden;">
+        <table class="table table-bordered table-striped" style="margin-bottom: 0;">
+          <thead>
+            <tr style="background: linear-gradient(135deg, var(--primary-finance), var(--secondary-finance)); color: white;">
+              <th style="border: none;"><i class="fa fa-hashtag"></i> #</th>
+              <th style="border: none;"><i class="fa fa-dollar"></i> Cantidad</th>
+              <th style="border: none;"><i class="fa fa-calendar"></i> Fecha</th>
+              <th style="border: none;"><i class="fa fa-file-text"></i> Descripción</th>
+              <th style="border: none;"><i class="fa fa-map-marker"></i> Ubicación</th>
+              <th style="border: none;"><i class="fa fa-user"></i> Propietario</th>
+              <th style="border: none;"><i class="fa fa-archive"></i> Cajita / Subcuenta</th>
+              <th style="border: none;"><i class="fa fa-cog"></i> Acciones</th>
+            </tr>
 
-        <div class="table-responsive">
-          <div style="text-align: right; margin-bottom: 10px;">
-            <button class="btn btn-warning btn-sm" ng-click="limpiarFiltros()">
-              <i class="fa fa-eraser"></i> Limpiar filtros
-            </button>
-          </div>
+            <!-- FILTROS -->
+            <tr style="background: #f9fafb;">
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+              <th style="border: 1px solid #e5e7eb;"></th>
 
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Cantidad</th>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Ubicación</th>
-                <th>Propietario</th>
-                <th>Cajita / Subcuenta</th>
-                <th>Acciones</th>
-              </tr>
+              <!-- Filtro Ubicación -->
+              <th style="border: 1px solid #e5e7eb;">
+                <input type="text" class="form-control input-sm" placeholder="Buscar..." ng-model="filtro.ubicacion">
+              </th>
 
-              <!-- 🔎 FILTROS DENTRO DE LA TABLA -->
-              <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+              <!-- Filtro Propietario -->
+              <th style="border: 1px solid #e5e7eb;">
+                <input type="text" class="form-control input-sm" placeholder="Buscar..." ng-model="filtro.propietario">
+              </th>
 
-                <!-- Filtro Ubicación -->
-                <th>
-                  <input type="text" class="form-control input-sm"
-                        placeholder="Buscar..."
-                        ng-model="filtro.ubicacion">
-                </th>
+              <!-- Filtro Cajita / Subcuenta -->
+              <th style="border: 1px solid #e5e7eb;">
+                <input type="text" class="form-control input-sm" placeholder="Buscar..." ng-model="filtro.cajita">
+              </th>
 
-                <!-- Filtro Propietario -->
-                <th>
-                  <input type="text" class="form-control input-sm"
-                        placeholder="Buscar..."
-                        ng-model="filtro.propietario">
-                </th>
+              <th style="border: 1px solid #e5e7eb;"></th>
+            </tr>
+          </thead>
 
-                <!-- Filtro Cajita / Subcuenta -->
-                <th>
-                  <input type="text" class="form-control input-sm"
-                        placeholder="Buscar..."
-                        ng-model="filtro.cajita">
-                </th>
-
-                <th></th>
-              </tr>
-            </thead>
-
-
-            <tbody>
-              <!-- TABLA AHORROS -->
-              <tr ng-if="pestanaActiva === 'ahorros'"
-                ng-repeat="a in paginar(ahorrosPositivos() | filter:filtrarTabla) track by a.id">
-
-
-
-                <td>{{$index + 1}}</td>
-                <td>{{a.cantidad_ahorro | currency}}</td>
-                <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
-                <td>{{a.descripcion || '-'}}</td>
-                <td>{{a.ubicacion.nombre}}</td>
-                <td>{{a.propietario.nombre}}</td>
-                <td>{{a.cajita_subcuenta || '-'}}</td>
-                <td class="cell-center">
-                  <div>
-                    <div class="icon-circle-eliminar"
-                        ng-click="eliminarAhorro(a.id)"
-                        uib-tooltip="Eliminar ahorro">
-                      <i class="fa fa-trash"></i>
-                    </div>
+          <tbody>
+            <!-- TABLA AHORROS -->
+            <tr ng-if="pestanaActiva === 'ahorros'"
+                ng-repeat="a in paginar(ahorrosPositivos() | filter:filtrarTabla) track by a.id"
+                class="fila-tabla-hover">
+              <td>{{$index + 1}}</td>
+              <td>
+                <span class="movement-amount positive">
+                  {{a.cantidad_ahorro | currency}}
+                </span>
+              </td>
+              <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
+              <td>{{a.descripcion || '-'}}</td>
+              <td>{{a.ubicacion.nombre}}</td>
+              <td>{{a.propietario.nombre}}</td>
+              <td>{{a.cajita_subcuenta || '-'}}</td>
+              <td class="cell-center">
+                <div>
+                  <div class="icon-circle-eliminar" ng-click="eliminarAhorro(a.id)" uib-tooltip="Eliminar ahorro">
+                    <i class="fa fa-trash"></i>
                   </div>
-                </td>
+                </div>
+              </td>
+            </tr>
 
-
-
-
-              </tr>
-
-              <!-- TABLA GASTOS -->
-              <tr ng-if="pestanaActiva === 'gastos'"
-                ng-repeat="a in paginar(ahorrosNegativos() | filter:filtrarTabla) track by a.id">
-
-
-
-                <td>{{$index + 1}}</td>
-                <td>{{a.cantidad_ahorro | currency}}</td>
-                <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
-                <td>{{a.descripcion || '-'}}</td>
-                <td>{{a.ubicacion.nombre}}</td>
-                <td>{{a.propietario.nombre}}</td>
-                <td>{{a.cajita_subcuenta || '-'}}</td>
-                <td class="cell-center">
-                  <div>
-                    <div class="icon-circle-eliminar"
-                      ng-click="eliminarAhorro(a.id)"
-                      uib-tooltip="Eliminar gasto">
-                      <i class="fa fa-trash"></i>
-                    </div>
+            <!-- TABLA GASTOS -->
+            <tr ng-if="pestanaActiva === 'gastos'"
+                ng-repeat="a in paginar(ahorrosNegativos() | filter:filtrarTabla) track by a.id"
+                class="fila-tabla-hover">
+              <td>{{$index + 1}}</td>
+              <td>
+                <span class="movement-amount negative">
+                  {{a.cantidad_ahorro | currency}}
+                </span>
+              </td>
+              <td>{{a.fecha_ahorro | date:'dd/MM/yyyy'}}</td>
+              <td>{{a.descripcion || '-'}}</td>
+              <td>{{a.ubicacion.nombre}}</td>
+              <td>{{a.propietario.nombre}}</td>
+              <td>{{a.cajita_subcuenta || '-'}}</td>
+              <td class="cell-center">
+                <div>
+                  <div class="icon-circle-eliminar" ng-click="eliminarAhorro(a.id)" uib-tooltip="Eliminar gasto">
+                    <i class="fa fa-trash"></i>
                   </div>
-                </td>
-              </tr>
+                </div>
+              </td>
+            </tr>
 
-              <!-- SIN REGISTROS -->
-              <tr ng-if="(pestanaActiva === 'ahorros' && ahorrosPositivos().length === 0) ||
-                        (pestanaActiva === 'gastos' && ahorrosNegativos().length === 0)">
-                <td colspan="8" class="text-center text-muted">
-                  No hay registros en esta categoría.
-                </td>
-              </tr>
+            <!-- SIN REGISTROS -->
+            <tr ng-if="(pestanaActiva === 'ahorros' && ahorrosPositivos().length === 0) ||
+                      (pestanaActiva === 'gastos' && ahorrosNegativos().length === 0)">
+              <td colspan="8" style="text-align: center; padding: 40px; color: #9ca3af;">
+                <i class="fa fa-inbox" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                <p style="font-size: 16px; font-weight: 500; margin: 0;">No hay registros en esta categoría.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-            </tbody>
-            
+        <!-- PAGINACIÓN -->
+        <div class="paginacion-box">
+          <button class="btn btn-default btn-sm" ng-disabled="currentPage === 1" ng-click="currentPage = currentPage - 1"
+                  style="border-radius: 20px; padding: 6px 16px; font-weight: 600; transition: all 0.3s ease;">
+            <i class="fa fa-chevron-left"></i> Anterior
+          </button>
 
-          </table>
-          <!-- PAGINACIÓN -->
-          <div class="paginacion-box">
+          <span style="font-weight: 600; color: var(--dark-finance); padding: 0 16px;">
+            Página {{currentPage}}
+          </span>
 
-            
-            <button class="btn btn-default btn-sm"
-                    ng-disabled="currentPage === 1"
-                    ng-click="currentPage = currentPage - 1">
-              ← Anterior
-            </button>
-
-            <span style="margin: 0 12px;">
-              Página {{currentPage}}
-            </span>
-
-            <button class="btn btn-default btn-sm"
-                    ng-disabled="(currentPage * pageSize) >= 
-                      ((pestanaActiva === 'ahorros' ? ahorrosPositivos() : ahorrosNegativos()).length)"
-                    ng-click="currentPage = currentPage + 1">
-              Siguiente →
-            </button>
-
-          </div>
-
-
-          <div class="mostrar-box">
-
-            <label>
-              Mostrar:
-              <select ng-model="pageSize" ng-change="currentPage = 1"
-                      class="form-control input-sm" style="width:auto; display:inline-block;">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="999999">Todos</option>
-              </select>
-              registros
-            </label>
-          </div>
-
-
+          <button class="btn btn-default btn-sm"
+                  ng-disabled="(currentPage * pageSize) >= ((pestanaActiva === 'ahorros' ? ahorrosPositivos() : ahorrosNegativos()).length)"
+                  ng-click="currentPage = currentPage + 1"
+                  style="border-radius: 20px; padding: 6px 16px; font-weight: 600; transition: all 0.3s ease;">
+            Siguiente <i class="fa fa-chevron-right"></i>
+          </button>
         </div>
+
+        <div class="mostrar-box">
+          <label style="font-weight: 600; color: var(--dark-finance);">
+            Mostrar:
+            <select ng-model="pageSize" ng-change="currentPage = 1" class="form-control input-sm" 
+                    style="width: auto; display: inline-block; margin: 0 8px; border: 2px solid #e5e7eb; border-radius: 6px;">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="999999">Todos</option>
+            </select>
+            registros
+          </label>
+        </div>
+
       </div>
     </div>
 
   </div>
 </div>
 
+<style>
+/* Estilos para inputs del formulario */
+.input-ahorro {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  height: 40px;
+  line-height: 1.5;
+}
 
+.input-ahorro:focus {
+  border-color: var(--primary-finance);
+  box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.1);
+  outline: none;
+}
+
+.input-ahorro:hover {
+  border-color: #9ca3af;
+}
+
+/* Fix para selects */
+select.input-ahorro {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 35px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Checkboxes personalizados para cards - con fondo blanco */
+.checkbox-ahorro {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  border: 2.5px solid rgba(255, 255, 255, 0.7);
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none !important;
+}
+
+.checkbox-ahorro:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.2);
+}
+
+.checkbox-ahorro:hover {
+  border-color: white;
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.checkbox-ahorro:checked {
+  background-color: var(--success-finance);
+  border-color: var(--success-finance);
+}
+
+.checkbox-ahorro:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Checkbox para hijos (fondo blanco) - necesita más contraste */
+.checkbox-ahorro-hijo {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  border: 2.5px solid #d1d5db;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  outline: none !important;
+}
+
+.checkbox-ahorro-hijo:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.15);
+}
+
+.checkbox-ahorro-hijo:hover {
+  border-color: var(--primary-finance);
+  transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.checkbox-ahorro-hijo:checked {
+  background-color: var(--success-finance);
+  border-color: var(--success-finance);
+}
+
+.checkbox-ahorro-hijo:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Botones del formulario */
+.btn-ahorro {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-ahorro:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-ahorro:active {
+  transform: translateY(0);
+}
+
+.btn-ahorro-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-ahorro-warning:hover {
+  background: #d97706;
+}
+
+.btn-ahorro-success {
+  background: linear-gradient(135deg, var(--success-finance), #3dd98b);
+  color: white;
+}
+
+.btn-ahorro-success:hover {
+  background: linear-gradient(135deg, #3dd98b, var(--success-finance));
+}
+
+.btn-ahorro-success:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-ahorro-success:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Hover para cards hijos */
+.card-hijo-hover:hover {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  box-shadow: 0 4px 12px rgba(26, 95, 122, 0.15);
+  transform: translateX(4px);
+  border-left-width: 4px;
+}
+
+/* Hover para filas de la tabla */
+.fila-tabla-hover {
+  transition: all 0.2s ease;
+}
+
+.fila-tabla-hover:hover {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  box-shadow: 0 2px 8px rgba(26, 95, 122, 0.1);
+}
+
+.fila-tabla-hover:hover td {
+  border-color: #bfdbfe !important;
+}
+
+/* Estilos adicionales específicos para esta vista */
+.active-tab {
+  color: var(--primary-finance) !important;
+  border-bottom-color: var(--primary-finance) !important;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Animación para los acordeones */
+[data-toggle="collapse"] {
+  transition: all 0.3s ease;
+}
+
+[data-toggle="collapse"]:hover {
+  opacity: 0.8;
+}
+
+/* Estilos para tabla normal con bordes */
+.table-bordered {
+  border: 1px solid #e5e7eb;
+}
+
+.table-bordered thead th {
+  border-bottom: none !important;
+  padding: 14px 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.table-bordered tbody td {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(249, 250, 251, 0.5);
+}
+
+.table-striped tbody tr:hover {
+  background-color: rgba(26, 95, 122, 0.05);
+  transition: background-color 0.2s ease;
+}
+</style>

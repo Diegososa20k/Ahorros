@@ -88,12 +88,14 @@ $scope.ahorrosNegativos = function () {
 
   // 🔹 Generar estructura de cards (agrupa por ubicacion -> cajita y suma)
   $scope.generarCards = function() {
-    const mapUbic = {}; // clave = ubicacion_id
+    const mapUbic = {}; // clave = "propietario_id-ubicacion_id"
 
     ($scope.ahorros || []).forEach(a => {
-      if (!a.ubicacion_id) return;
+      if (!a.ubicacion_id || !a.propietario_id) return;
 
-      const uid = a.ubicacion_id;
+      // 🔹 CLAVE COMPUESTA: propietario + ubicación
+      const clave = `${a.propietario_id}-${a.ubicacion_id}`;
+      
       const nombreUbic = (a.ubicacion && a.ubicacion.nombre) ? a.ubicacion.nombre : 'Sin ubicación';
       const nombreCaja = a.cajita_subcuenta ? a.cajita_subcuenta : 'No tiene';
       const nombreProp = (a.propietario && a.propietario.nombre)
@@ -101,9 +103,11 @@ $scope.ahorrosNegativos = function () {
         : 'Sin propietario';
 
       // Crear ubicación si no existe
-      if (!mapUbic[uid]) {
-        mapUbic[uid] = {
-          id: uid,
+      if (!mapUbic[clave]) {
+        mapUbic[clave] = {
+          id: clave,  // 🔹 Usar clave compuesta
+          ubicacion_id: a.ubicacion_id,
+          propietario_id: a.propietario_id,
           nombre: nombreUbic,
           propietario: nombreProp,
           cajitas: {},
@@ -112,7 +116,7 @@ $scope.ahorrosNegativos = function () {
         };
       }
 
-      const ubic = mapUbic[uid];
+      const ubic = mapUbic[clave];
       const cantidad = parseFloat(a.cantidad_ahorro) || 0;
 
       // Sumar al total de la ubicación
@@ -141,6 +145,8 @@ $scope.ahorrosNegativos = function () {
     $scope.ubicacionesConAhorros = Object.values(mapUbic).map(u => {
       return {
         id: u.id,
+        ubicacion_id: u.ubicacion_id,  // 🔹 Mantener IDs separados
+        propietario_id: u.propietario_id,
         nombre: u.nombre,
         propietario: u.propietario,
         total: u.total,
