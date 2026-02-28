@@ -6,18 +6,6 @@ angular.module('ahorrosApp')
     $scope.deudas = [];
     $scope.propietarios = [];
 
-    // Cargar todas las deudas
-    $scope.cargarDeudas = function() {
-        controlDeudaFactory.query().$promise.then(function(response) {
-            $scope.deudas = response; // el backend devuelve lista directa
-
-             // Inicializar acordeón cerrado para cada deuda
-        $scope.deudas.forEach(d => d._abierto = false);
-        });
-    };
-
-    $scope.cargarDeudas(); // carga al entrar
-
 
 
 
@@ -277,27 +265,79 @@ $scope.recalcularSeleccionDeuda = function() {
   $scope.totalDeudaSeleccionado = parseFloat(total.toFixed(2));
 };
 
-// Modificar la función cargarDeudas para inicializar los checkboxes
+// ✅ SOLO ESTA DEFINICIÓN DEBE EXISTIR
 $scope.cargarDeudas = function() {
-  controlDeudaFactory.query().$promise.then(function(response) {
-    $scope.deudas = response;
-    
-    // Inicializar acordeón cerrado y checkboxes en false
-    $scope.deudas.forEach(d => {
-      d._abierto = false;
-      d.checked = false;
-      
-      if (d.control_mensualidad) {
-        d.control_mensualidad.forEach(m => {
-          m.checked = false;
+    controlDeudaFactory.query().$promise.then(function(response) {
+        $scope.deudas = response;
+
+        $scope.deudas.forEach(d => {
+            d._abierto = false;
+            d.checked = false;
+            if (d.control_mensualidad) {
+                d.control_mensualidad.forEach(m => m.checked = false);
+            }
         });
-      }
+
+        $scope.recalcularSeleccionDeuda();
+        $scope.calcularResumenPropietarios();
     });
-    
-    $scope.recalcularSeleccionDeuda();
-  });
 };
 
+$scope.cargarDeudas(); // ✅ llamada única aquí
+
+ $scope.tieneAbono = function(d) {
+        return d.control_mensualidad.some(m =>
+            m.abono > 0 && !m.pagado_mensualidades
+        );
+    };
+
+   $scope.resumenPropietarios = [];
+
+$scope.calcularResumenPropietarios = function() {
+    const mapa = {};
+    const hoy = new Date();
+    const mesActual = hoy.getMonth();
+    const anioActual = hoy.getFullYear();
+
+    ($scope.deudas || []).forEach(d => {
+        const propNombre = d.control_mensualidad[0].propietario_nombre;
+        const propId = d.control_mensualidad[0].propietario_id;
+
+        if (!mapa[propId]) {
+            mapa[propId] = {
+                nombre: propNombre,
+                deudaTotal: 0,
+                deudaMensualTotal: 0,
+                deudaTotalActual: 0,
+                deudaMensualActual: 0
+            };
+        }
+
+        const p = mapa[propId];
+
+        p.deudaTotal += parseFloat(d.cantidad_total) || 0;
+
+        d.control_mensualidad.forEach(m => {
+            const fechaPago = new Date(m.fecha_pago);
+            const esMesActual = fechaPago.getMonth() === mesActual && fechaPago.getFullYear() === anioActual;
+
+            if (esMesActual) {
+                p.deudaMensualTotal += parseFloat(m.cantidad) || 0;
+            }
+
+            if (!m.pagado_mensualidades) {
+                const pendiente = (parseFloat(m.cantidad) || 0) - (parseFloat(m.abono) || 0);
+                p.deudaTotalActual += pendiente;
+
+                if (esMesActual) {
+                    p.deudaMensualActual += pendiente;
+                }
+            }
+        });
+    });
+
+    $scope.resumenPropietarios = Object.values(mapa);
+};
 
 })
 
@@ -345,7 +385,7 @@ $scope.cargarDeudas = function() {
             );
             });
     };
-
+   
 
     $scope.cancelar = function() {
         $uibModalInstance.dismiss('cancel');
